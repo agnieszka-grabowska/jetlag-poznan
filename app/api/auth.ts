@@ -6,7 +6,8 @@ const WEEK_IN_SECONDS = 7 * 24 * 60 * 60;
 
 export async function createAuthCookie(userId: string) {
   const session = await encrypt({ userId });
-  cookies().set({
+  const c = await cookies();
+  c.set({
     name: "jetlag_session",
     value: session,
     maxAge: WEEK_IN_SECONDS,
@@ -18,7 +19,8 @@ export async function createAuthCookie(userId: string) {
 }
 
 export async function validateSession() {
-  const session = cookies().get("jetlag_session")?.value;
+  const c = await cookies();
+  const session = c.get("jetlag_session")?.value;
   const sessionPayload = await decrypt(session);
 
   const userId = sessionPayload?.userId;

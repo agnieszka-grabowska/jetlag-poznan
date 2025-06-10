@@ -9,15 +9,17 @@ export type GetRoundResponse = {
   };
 };
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { gameId: string; roundId: string } }
-) {
+type Params = Promise<{ gameId: string; roundId: string }>;
+
+export async function GET(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId, roundId } = await params;
+
   const round = await db.round.findFirstOrThrow({
     where: {
-      id: params.roundId,
-      gameId: params.gameId,
+      id: roundId,
+      gameId,
       teams: {
         some: {
           team: {
@@ -64,15 +66,15 @@ export async function GET(
 }
 
 export type DeleteRoundResponse = { round: Round };
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { gameId: string; roundId: string } }
-) {
+export async function DELETE(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId, roundId } = await params;
+
   const round = await db.round.delete({
     where: {
-      id: params.roundId,
-      gameId: params.gameId,
+      id: roundId,
+      gameId,
       teams: {
         some: {
           team: {
@@ -89,7 +91,7 @@ export async function DELETE(
 
   const game = await db.game.findFirst({
     where: {
-      id: params.gameId,
+      id: gameId,
     },
     include: {
       rounds: true,
@@ -100,7 +102,7 @@ export async function DELETE(
     if (game.rounds.length === 0) {
       await db.game.delete({
         where: {
-          id: params.gameId,
+          id: gameId,
         },
       });
     }

@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
-export function serverFetch(url: string, requestInit?: RequestInit) {
-  const headersList = headers();
+export async function serverFetch(url: string, requestInit?: RequestInit) {
+  const headersList = await headers();
   const cookieHeader = headersList.get("cookie") || "";
 
   return fetchWithBaseUrl(url, {

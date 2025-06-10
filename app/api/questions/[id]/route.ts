@@ -10,18 +10,16 @@ export type PutQuestionsRequest = {
   cost: number;
   type: string;
 };
+type Params = Promise<{ id: string }>;
 export type PutQuestionsResponse = { question: Question };
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
-  const { content, details, cost, type } =
-    (await request.json()) as PutQuestionsRequest;
+  const { id } = await params;
+  const { content, details, cost, type } = (await request.json()) as PutQuestionsRequest;
 
   const updatedQuestion = await db.question.update({
     where: {
-      id: params.id,
+      id,
       ownerId: userId,
     },
     data: {
@@ -36,15 +34,13 @@ export async function PUT(
 }
 
 export type DeleteQuestionsResponse = { question: Question };
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function DELETE(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+  const { id } = await params;
 
   const deletedQuestion = await db.question.delete({
     where: {
-      id: params.id,
+      id,
       ownerId: userId,
     },
   });

@@ -7,8 +7,11 @@ import { sendNotification } from "@/app/utils/actions";
 export type AskQuestionResponse = {
   question: TeamRoundQuestion & { question: Question };
 };
-export async function POST(_request: Request, { params }: { params: { questionId: string } }) {
+
+type Params = Promise<{ questionId: string }>;
+export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+  const { questionId } = await params;
 
   // Throw if the user is not in the target team or not a seeker
   const lastRound = await db.teamRound.findFirstOrThrow({
@@ -56,7 +59,7 @@ export async function POST(_request: Request, { params }: { params: { questionId
     data: {
       teamId: lastRound.teamId,
       roundId: lastRound.roundId,
-      questionId: params.questionId,
+      questionId,
     },
     include: {
       question: true,
@@ -67,7 +70,7 @@ export async function POST(_request: Request, { params }: { params: { questionId
     setTimeout(async () => {
       const ques = await db.teamRoundQuestion.findFirst({
         where: {
-          questionId: params.questionId,
+          questionId,
           teamId: lastRound.teamId,
           roundId: lastRound.roundId,
           answer: null,
@@ -82,7 +85,7 @@ export async function POST(_request: Request, { params }: { params: { questionId
           .update({
             where: {
               teamId_questionId_roundId: {
-                questionId: params.questionId,
+                questionId,
                 teamId: lastRound.teamId,
                 roundId: lastRound.roundId,
               },

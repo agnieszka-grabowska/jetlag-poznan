@@ -17,14 +17,14 @@ export default async function BottomNavigation({
       <NavItem
         href={`/game/${params.gameId}/rounds/${params.roundId}/questions`}
         icon={<FaRectangleList size={iconSize} />}
-        badge={<PendingQuestionsBadge params={params} />}
+        badge={<PendingQuestionsBadge />}
       >
         Questions
       </NavItem>
       <NavItem
         href={`/game/${params.gameId}/rounds/${params.roundId}/curses`}
         icon={<FaMeteor size={iconSize} />}
-        badge={<ActiveCursesBadge params={params} />}
+        badge={<ActiveCursesBadge />}
       >
         Curses
       </NavItem>

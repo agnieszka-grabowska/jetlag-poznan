@@ -7,11 +7,12 @@ export type PostRoundResponse = {
   round: Round;
 };
 
-export async function POST(
-  _request: Request,
-  { params }: { params: { gameId: string } },
-) {
+type Params = Promise<{ gameId: string }>;
+
+export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId } = await params;
 
   // It's possible to start another game if all rounds of a game are finished
   // Fail if there is an unfinished round in any game
@@ -38,7 +39,7 @@ export async function POST(
 
   const previousRounds = await db.round.findMany({
     where: {
-      gameId: params.gameId,
+      gameId,
       teams: {
         some: {
           team: {
@@ -81,7 +82,7 @@ export async function POST(
 
   const round = await db.round.create({
     data: {
-      gameId: params.gameId,
+      gameId,
       teams: {
         create: nextTeams.map((team) => {
           return {
