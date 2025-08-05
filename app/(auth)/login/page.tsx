@@ -52,11 +52,11 @@ export default function Page() {
       >
         <label>
           Username
-          <input type="text" name="username" required />
+          <input type="text" name="username" required autoComplete="username" />
         </label>
         <label>
           Password
-          <input type="password" name="password" required />
+          <input type="password" name="password" required autoComplete="current-password" />
         </label>
         <Button type="submit" disabled={isMutating}>
           {isMutating ? <Spinner /> : "Login"}
