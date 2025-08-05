@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import styles from "./CardWrapper.module.css";
 
 export function CardWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {

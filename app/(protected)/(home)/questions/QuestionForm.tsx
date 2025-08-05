@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { PostQuestionsRequest } from "@/app/api/questions/route";
 import { Button } from "@/app/ui/components/button/button";
 import Form from "@/app/ui/components/Form/Form";
+import { JSX } from "react";
 
 export function QuestionForm({
   type,

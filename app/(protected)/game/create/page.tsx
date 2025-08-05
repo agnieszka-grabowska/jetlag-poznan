@@ -27,10 +27,7 @@ export default function CreateGamePage() {
   const router = useRouter();
 
   const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [game, dispatch] = React.useReducer<Reducer<GameState, GameAction>>(
-    reducer,
-    INITIAL_SETTINGS
-  );
+  const [game, dispatch] = React.useReducer(reducer, INITIAL_SETTINGS);
 
   React.useEffect(() => {
     setErrorMessage("");

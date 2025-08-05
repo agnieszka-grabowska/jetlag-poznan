@@ -2,6 +2,7 @@
 
 import useCountdown from "@/app/hooks/use-countdown";
 import Item from "@/app/ui/components/Item/Item";
+import { JSX } from "react";
 
 export default function TeamCurseWrapper({
   children,

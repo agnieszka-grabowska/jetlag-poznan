@@ -1,5 +1,6 @@
 import Form from "@/app/ui/components/Form/Form";
 import ListItemPlaceholder from "@/app/ui/components/ListItemPlaceholder/ListItemPlaceholder";
+import { JSX } from "react";
 
 export default function Loading(): JSX.Element {
   return (

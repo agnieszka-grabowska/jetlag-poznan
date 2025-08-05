@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, JSX } from "react";
 import styles from "./tag.module.css";
 
 export type TagProps = {
