@@ -5,15 +5,19 @@ import { db } from "@/app/api/db";
 
 export type GetGameCursesResponse = { curses: Array<GameCurse & { curse: Curse }> };
 
-export async function GET(_request: Request, { params }: { params: { gameId: string } }) {
+type Params = Promise<{ gameId: string }>;
+
+export async function GET(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId } = await params;
 
   const curses = await db.gameCurse.findMany({
     orderBy: {
       difficulty: "asc",
     },
     where: {
-      gameId: params.gameId,
+      gameId,
       game: {
         rounds: {
           some: {

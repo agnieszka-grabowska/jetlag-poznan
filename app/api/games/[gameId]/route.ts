@@ -6,11 +6,17 @@ import { validateSession } from "@/app/api/auth";
 export type GetGameResponse = {
   game: Game & { game_curses: (GameCurse & Curse)[]; game_questions: Question[] };
 };
-export async function GET(_: Request, { params }: { params: { gameId: string } }) {
+
+type Params = Promise<{ gameId: string }>;
+
+export async function GET(_: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId } = await params;
+
   const game = await db.game.findFirstOrThrow({
     where: {
-      id: params.gameId,
+      id: gameId,
       rounds: {
         some: {
           teams: {
@@ -48,10 +54,12 @@ export async function GET(_: Request, { params }: { params: { gameId: string } }
 }
 
 export type DeleteGamesResponse = { game: Game };
-export async function DELETE(_request: Request, { params }: { params: { gameId: string } }) {
+export async function DELETE(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId } = await params;
   const game = await db.game.delete({
-    where: { id: params.gameId, ownerId: userId },
+    where: { id: gameId, ownerId: userId },
   });
 
   return NextResponse.json<DeleteGamesResponse>({ game });

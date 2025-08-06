@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Text } from "../components/text/text";
 import { GetCursesResponse } from "@/app/api/curses/route";
 import { serverFetch } from "@/app/server-fetch";
+import { JSX } from "react";
 
 export async function Curses(): Promise<JSX.Element> {
   const response = await serverFetch("/api/curses");

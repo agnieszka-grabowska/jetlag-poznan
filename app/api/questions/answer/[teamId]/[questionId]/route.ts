@@ -10,11 +10,15 @@ export type AnswerQuestionRequest = {
 export type AnswerQuestionResponse = {
   question: TeamRoundQuestion & { question: Question };
 };
-export async function POST(
-  request: Request,
-  { params }: { params: { questionId: string; teamId: string } }
-) {
+
+type Params = Promise<{
+  questionId: string;
+  teamId: string;
+}>;
+
+export async function POST(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+  const { questionId, teamId } = await params;
 
   const { answer } = (await request.json()) as AnswerQuestionRequest;
 
@@ -38,8 +42,8 @@ export async function POST(
   const answerResponse = await db.teamRoundQuestion.update({
     where: {
       teamId_questionId_roundId: {
-        questionId: params.questionId,
-        teamId: params.teamId,
+        questionId,
+        teamId,
         roundId: lastRound.roundId,
       },
     },
@@ -55,7 +59,7 @@ export async function POST(
   if (!answerResponse) {
     return NextResponse.json(
       {
-        error: `Couldn't find a question ${params.questionId} for team ${params.teamId} in active round`,
+        error: `Couldn't find a question ${questionId} for team ${teamId} in active round`,
       },
       { status: 400 }
     );
@@ -63,7 +67,7 @@ export async function POST(
 
   const question = await db.question.findFirstOrThrow({
     where: {
-      id: params.questionId,
+      id: questionId,
     },
     select: {
       cost: true,
@@ -74,7 +78,7 @@ export async function POST(
     const updatedTeamRound = await db.teamRound.update({
       where: {
         teamId_roundId: {
-          teamId: params.teamId,
+          teamId,
           roundId: lastRound.roundId,
         },
       },

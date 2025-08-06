@@ -2,7 +2,7 @@
   display: flex;
   list-style: none;
   gap: 16px;
-  overflow-x: scroll;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
   background-color: #0f202e;
   scroll-padding: 12px;

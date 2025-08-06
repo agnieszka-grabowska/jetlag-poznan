@@ -1,5 +1,5 @@
 import styles from "./BottomNavigation.module.css";
-import { FaHouse, FaMeteor, FaRectangleList, FaAlignLeft } from "react-icons/fa6";
+import { FaHouse, FaMeteor, FaRectangleList, FaAlignLeft, FaMapLocation } from "react-icons/fa6";
 import { ActiveCursesBadge, PendingQuestionsBadge } from "./Badges";
 import NavItem from "./NavItem";
 
@@ -17,16 +17,22 @@ export default async function BottomNavigation({
       <NavItem
         href={`/game/${params.gameId}/rounds/${params.roundId}/questions`}
         icon={<FaRectangleList size={iconSize} />}
-        badge={<PendingQuestionsBadge params={params} />}
+        badge={<PendingQuestionsBadge />}
       >
         Questions
       </NavItem>
       <NavItem
         href={`/game/${params.gameId}/rounds/${params.roundId}/curses`}
         icon={<FaMeteor size={iconSize} />}
-        badge={<ActiveCursesBadge params={params} />}
+        badge={<ActiveCursesBadge />}
       >
         Curses
+      </NavItem>
+      <NavItem
+        href={`/game/${params.gameId}/rounds/${params.roundId}/map`}
+        icon={<FaMapLocation size={iconSize} />}
+      >
+        Map
       </NavItem>
       <NavItem
         href={`/game/${params.gameId}/rounds/${params.roundId}/rules`}

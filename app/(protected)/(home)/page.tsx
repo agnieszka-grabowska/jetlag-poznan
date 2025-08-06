@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { JSX, Suspense } from "react";
 import { Questions } from "@/app/ui/questions/Questions";
 import { Curses } from "@/app/ui/curses/Curses";
 import Games from "@/app/ui/games";

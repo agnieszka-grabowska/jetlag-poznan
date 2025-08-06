@@ -4,24 +4,27 @@ import GameProvider from "./components/GameProvider";
 import BottomNavigation from "./components/BottomNavigation/BottomNavigation";
 import RoundsNavigation from "./components/RoundsNavigation/RoundsNavigation";
 import { TopNavigation } from "./components/TopNavigation/TopNavigation";
+import React from "react";
 
-export default function Layout({
+type Params = Promise<{ gameId: string; roundId: string }>;
+
+export default async function Layout({
   children,
   params,
 }: {
-  children: JSX.Element;
-  params: { gameId: string; roundId: string };
+  children: React.ReactNode;
+  params: Params;
 }) {
   return (
     <div className={styles.grid}>
       <GameProvider>
         <RoundProvider>
           <TopNavigation />
-          <RoundsNavigation params={params} />
-          <main className={styles.pageContentWrapper}>{children}</main>
+          <RoundsNavigation params={await params} />
+          <main style={{ overflow: "auto" }}>{children}</main>
         </RoundProvider>
       </GameProvider>
-      <BottomNavigation params={params} />
+      <BottomNavigation params={await params} />
     </div>
   );
 }

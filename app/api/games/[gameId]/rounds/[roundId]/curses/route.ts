@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
+import { P } from "vitest/dist/chunks/environment.d.cL3nLXbE.js";
 
 export type FlatCurse = {
   id: string;
@@ -17,16 +18,17 @@ export type GetGameCursesResponse = {
   curses: FlatCurse[];
 };
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { gameId: string; roundId: string } }
-) {
+type Params = Promise<{ gameId: string; roundId: string }>;
+
+export async function GET(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { gameId, roundId } = await params;
 
   const round = await db.round.findFirstOrThrow({
     where: {
-      id: params.roundId,
-      gameId: params.gameId,
+      id: roundId,
+      gameId,
       teams: {
         some: {
           team: {

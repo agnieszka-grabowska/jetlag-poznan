@@ -8,11 +8,12 @@ export type ThrowCurseResponse = {
   curse: TeamRoundCurse & { curse: Curse };
 };
 
-export async function POST(
-  _request: Request,
-  { params }: { params: { difficulty: string; targetTeamId: string } }
-) {
+type Params = Promise<{ difficulty: string; targetTeamId: string }>;
+
+export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const awaitedParams = await params;
 
   // Throw if the user is not in the target team or not a hider
   const lastRound = await db.teamRound.findFirstOrThrow({
@@ -41,14 +42,14 @@ export async function POST(
     },
   });
 
-  const difficulty = parseDifficulty(params.difficulty);
+  const difficulty = parseDifficulty(awaitedParams.difficulty);
   const cost = game.curse_costs[difficulty - 1];
 
   const team = await db.teamRound.update({
     where: {
       teamId_roundId: {
         roundId: lastRound.roundId,
-        teamId: params.targetTeamId,
+        teamId: awaitedParams.targetTeamId,
       },
       coins: {
         gte: cost,
@@ -86,7 +87,7 @@ export async function POST(
   const alreadyPlayedCurses = await db.teamRoundCurse.findMany({
     where: {
       roundId: lastRound.roundId,
-      teamId: params.targetTeamId,
+      teamId: awaitedParams.targetTeamId,
       curseId: {
         in: cursesOfDesiredDifficulty.map((curse) => curse.curseId),
       },
@@ -101,7 +102,7 @@ export async function POST(
   const curse = await db.teamRoundCurse.create({
     data: {
       curseId: rolledCurse,
-      teamId: params.targetTeamId,
+      teamId: awaitedParams.targetTeamId,
       roundId: lastRound.roundId,
     },
     include: {

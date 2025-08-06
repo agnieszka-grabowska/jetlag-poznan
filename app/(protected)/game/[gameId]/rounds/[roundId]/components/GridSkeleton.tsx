@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 export default function GridSkeleton({ children }: { children: JSX.Element }) {
   return (
     <>

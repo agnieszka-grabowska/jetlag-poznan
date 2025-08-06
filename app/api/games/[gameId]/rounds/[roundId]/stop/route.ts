@@ -7,19 +7,19 @@ export type StopRoundRequest = {
   winnerTeamId: string;
 };
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { gameId: string; roundId: string } }
-) {
+type Params = Promise<{ gameId: string; roundId: string }>;
+
+export async function PATCH(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+  const { gameId, roundId } = await params;
   const endedAt = new Date();
 
   const { winnerTeamId } = (await request.json()) as StopRoundRequest;
 
   const updatedRound = await db.round.update({
     where: {
-      id: params.roundId,
-      gameId: params.gameId,
+      id: roundId,
+      gameId,
       teams: {
         some: {
           team: {

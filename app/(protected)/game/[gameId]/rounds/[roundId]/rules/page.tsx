@@ -1,4 +1,3 @@
-import FlexWithGap from "@/app/ui/components/FlexWithGap/FlexWithGap";
 import Winner from "../components/Winner";
 import Header from "@/app/ui/components/header/header";
 import GameCursesCard from "./GameCursesCard";
@@ -8,7 +7,7 @@ import RemoveRoundButton from "../components/RemoveRoundButton/RemoveRoundButton
 
 export default function Page() {
   return (
-    <FlexWithGap gap={32}>
+    <>
       <InfoCards />
       <Winner />
       <div>
@@ -17,6 +16,6 @@ export default function Page() {
       </div>
       <AllTeamsSection />
       <RemoveRoundButton />
-    </FlexWithGap>
+    </>
   );
 }

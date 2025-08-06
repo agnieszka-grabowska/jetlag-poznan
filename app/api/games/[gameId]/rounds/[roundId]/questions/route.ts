@@ -19,15 +19,15 @@ export type GetGameQuestionsResponse = {
   questions: FlatQuestion[];
 };
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { gameId: string; roundId: string } }
-) {
+type Params = Promise<{ gameId: string; roundId: string }>;
+
+export async function GET(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
 
+  const { roundId, gameId } = await params;
   const userTeam = await db.teamRound.findFirstOrThrow({
     where: {
-      roundId: params.roundId,
+      roundId,
       team: {
         members: {
           some: {
@@ -39,8 +39,8 @@ export async function GET(
   });
   const round = await db.round.findFirstOrThrow({
     where: {
-      id: params.roundId,
-      gameId: params.gameId,
+      id: roundId,
+      gameId,
       teams: {
         some: {
           team: {
@@ -86,7 +86,9 @@ export async function GET(
             answer: roundQuestion?.answer ?? null,
           };
         }),
-      ].toSorted((a, b) => compareFn(a.created_at, b.created_at)),
+      ]
+        .slice()
+        .sort((a, b) => compareFn(a.created_at, b.created_at)),
     });
   }
 
@@ -113,7 +115,8 @@ export async function GET(
           answer: roundQuestion.answer,
         };
       })
-      .toSorted((a, b) => compareFn(a.created_at, b.created_at)),
+      .slice()
+      .sort((a, b) => compareFn(a.created_at, b.created_at)),
   });
 }
 

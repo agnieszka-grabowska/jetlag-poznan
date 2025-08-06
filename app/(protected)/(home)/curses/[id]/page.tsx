@@ -3,18 +3,22 @@ import { validateSession } from "@/app/api/auth";
 import Card from "@/app/ui/components/card/card";
 import { CurseForm } from "../CurseForm";
 
-export default async function Page({ params }: { params: { id: string } }) {
+type Params = Promise<{ id: string }>;
+
+export default async function Page({ params }: { params: Params }) {
+  const { id } = await params;
+
   const userId = await validateSession();
   const initialValues = await db.curse.findFirstOrThrow({
     where: {
-      id: params.id,
+      id,
       ownerId: userId,
     },
   });
   console.log("initial", initialValues);
   return (
     <Card title="Edit curse">
-      <CurseForm type="edit" initialValues={initialValues} id={params.id} />
+      <CurseForm type="edit" initialValues={initialValues} id={id} />
     </Card>
   );
 }

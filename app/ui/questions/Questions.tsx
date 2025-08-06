@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Text } from "../components/text/text";
 import { serverFetch } from "@/app/server-fetch";
+import { JSX } from "react";
 
 export async function Questions(): Promise<JSX.Element> {
   const response = await serverFetch(`/api/questions`);

@@ -3,16 +3,19 @@ import { db } from "@/app/api/db";
 import { NextResponse } from "next/server";
 
 export type GetActiveCursesResponse = { activeCurses: number };
-export async function GET(
-  _request: Request,
-  { params }: { params: { roundId: string; gameId: string } }
-) {
+
+type Params = Promise<{ roundId: string; gameId: string }>;
+
+export async function GET(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
+
+  const { roundId, gameId } = await params;
+
   const userTeam = await db.teamRound.findFirstOrThrow({
     where: {
-      roundId: params.roundId,
+      roundId,
       round: {
-        gameId: params.gameId,
+        gameId,
       },
       team: {
         members: {
@@ -28,9 +31,9 @@ export async function GET(
 
   const activeCurses = await db.teamRoundCurse.count({
     where: {
-      roundId: params.roundId,
+      roundId,
       round: {
-        gameId: params.gameId,
+        gameId,
       },
       created_at: {
         not: undefined,
