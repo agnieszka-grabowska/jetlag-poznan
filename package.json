@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.19.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "argon2": "0.31.2",
     "create-next-app": "^15.4.5",
     "framer-motion": "^12.16.0",

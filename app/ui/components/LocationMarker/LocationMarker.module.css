@@ -1,0 +1,16 @@
+.icon > div {
+  background-color: blue;
+  border-radius: 100%;
+  border: 2px white solid;
+  height: 100%;
+  animation: breathing 4s infinite alternate;
+}
+
+@keyframes breathing {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.2;
+  }
+}

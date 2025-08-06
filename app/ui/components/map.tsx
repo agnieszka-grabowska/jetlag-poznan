@@ -1,23 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import React from "react";
+import { MapContainer, Popup, TileLayer, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { DivIcon, LatLng } from "leaflet";
-
-const s: DivIcon = new DivIcon({
-  className: "custom-icon",
-  html: `<div style="background-color: #f00; width: 20px; height: 20px; border-radius: 50%;"></div>`,
-  iconSize: [20, 20],
-  iconAnchor: [10, 10],
-  popupAnchor: [0, -10],
-});
+import { DISTRICTS } from "@/app/districts";
+import LocationMarker from "./LocationMarker/LocationMarker";
 
 export default function Map() {
   // Coordinates for Poznań, Poland
   const latitude = 52.407775;
   const longitude = 16.912451;
-
-  const position: [number, number] = [52.43580661629394, 16.840996206520686];
 
   return (
     <MapContainer
@@ -31,30 +22,33 @@ export default function Map() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <Marker position={[52.417392124896494, 16.88560011724876]} icon={s}>
-        <Popup>HERE</Popup>
-      </Marker>
-
-      <LocationMarker></LocationMarker>
+      {DISTRICTS.map(({ name, positions }, index) => {
+        return (
+          <District
+            key={name}
+            name={name}
+            color={`oklch(from oklch(0.7056 0.1504 0) l c ${(360 / DISTRICTS.length) * index})`}
+            positions={positions}
+          />
+        );
+      })}
+      <LocationMarker />
     </MapContainer>
   );
 }
 
-function LocationMarker() {
-  const [position, setPosition] = useState<LatLng | null>(null);
-  const map = useMapEvents({
-    click() {
-      map.locate();
-    },
-    locationfound(e) {
-      setPosition(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
-
-  return position === null ? null : (
-    <Marker position={position} icon={s}>
-      <Popup>You are here</Popup>
-    </Marker>
+function District({
+  name,
+  positions,
+  color,
+}: {
+  name: string;
+  positions: [number, number][];
+  color: string;
+}) {
+  return (
+    <Polygon pathOptions={{ color, fillOpacity: 0.4 }} positions={positions}>
+      <Popup>{name}</Popup>
+    </Polygon>
   );
 }
