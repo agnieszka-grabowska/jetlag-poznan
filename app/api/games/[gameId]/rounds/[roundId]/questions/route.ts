@@ -13,6 +13,7 @@ export type FlatQuestion = {
   created_at: Date | null;
   answered_at: Date | null;
   answer: string | null;
+  photoUrl: string | null;
 };
 
 export type GetGameQuestionsResponse = {
@@ -84,6 +85,7 @@ export async function GET(_request: Request, { params }: { params: Params }) {
             created_at: roundQuestion?.created_at ?? null,
             answered_at: roundQuestion?.answered_at ?? null,
             answer: roundQuestion?.answer ?? null,
+            photoUrl: roundQuestion?.photo_url ?? null,
           };
         }),
       ]
@@ -113,6 +115,7 @@ export async function GET(_request: Request, { params }: { params: Params }) {
           created_at: roundQuestion.created_at,
           answered_at: roundQuestion.answered_at,
           answer: roundQuestion.answer,
+          photoUrl: roundQuestion.photo_url,
         };
       })
       .slice()

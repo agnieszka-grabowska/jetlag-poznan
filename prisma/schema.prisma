@@ -8,67 +8,67 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  username  String     @unique
-  password  String
-  teams     Team[]
-  curses    Curse[]
-  questions Question[]
-  game      Game[]
+  id            String         @id @default(uuid())
+  username      String         @unique
+  password      String
+  curses        Curse[]
+  game          Game[]
+  questions     Question[]
   subscriptions Subscription[]
+  teams         Team[]         @relation("TeamToUser")
 }
 
 model Subscription {
-  id String @id @default(uuid())
+  id     String @id @default(uuid())
   userId String
-  user   User                @relation(fields: [userId], references: [id], onDelete: Restrict)
-  sub String
+  sub    String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Game {
-  id        String      @id @default(uuid())
-  name      String
-  dice_cost Int?
-  curse_costs Int[]
-  jail_duration Int
+  id                String      @id @default(uuid())
+  name              String
+  ownerId           String
   answer_time_limit Int
-  game_questions Question[]
-  game_curses    GameCurse[]
-  rounds    Round[]
-  ownerId   String
-  owner     User        @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  dice_cost         Int?
+  jail_duration     Int
+  curse_costs       Int[]
+  owner             User        @relation(fields: [ownerId], references: [id])
+  game_curses       GameCurse[]
+  rounds            Round[]
+  game_questions    Question[]  @relation("GameToQuestion")
 }
 
 model Round {
   id         String              @id @default(uuid())
-  game       Game                @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId     String
   start_time DateTime?
   end_time   DateTime?
+  winner_id  String?
+  game       Game                @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  winner     Team?               @relation(fields: [winner_id], references: [id], onDelete: Cascade)
+  teams      TeamRound[]
   curses     TeamRoundCurse[]
   questions  TeamRoundQuestion[]
-  teams      TeamRound[]
-  winner_id  String?
-  winner     Team?             @relation(fields: [winner_id], references: [id], onDelete: Cascade)
 }
 
 model Team {
-  id        String              @id @default(uuid())
-  name      String
-  members   User[]
-  curses    TeamRoundCurse[]
-  questions TeamRoundQuestion[]
-  rounds    TeamRound[]
+  id         String              @id @default(uuid())
+  name       String
   won_rounds Round[]
+  rounds     TeamRound[]
+  curses     TeamRoundCurse[]
+  questions  TeamRoundQuestion[]
+  members    User[]              @relation("TeamToUser")
 }
 
 model TeamRound {
   teamId  String
   roundId String
-  team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  round   Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  coins   Int    @default(0)
   role    Role
+  coins   Int    @default(0)
+  round   Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@id([teamId, roundId])
 }
@@ -79,10 +79,10 @@ model Question {
   type    String
   cost    Int
   details String?
-  teams   TeamRoundQuestion[]
-  games   Game[]
   ownerId String
-  owner   User                @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  owner   User                @relation(fields: [ownerId], references: [id])
+  teams   TeamRoundQuestion[]
+  games   Game[]              @relation("GameToQuestion")
 }
 
 model Curse {
@@ -90,23 +90,18 @@ model Curse {
   defaultDifficulty Int?
   name              String
   effect            String
-  rounds            TeamRoundCurse[]
   ownerId           String
-  owner             User             @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  owner             User             @relation(fields: [ownerId], references: [id])
   games             GameCurse[]
-}
-
-enum Role {
-  HIDER
-  SEEKER
+  rounds            TeamRoundCurse[]
 }
 
 model GameCurse {
   gameId     String
   curseId    String
-  game       Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  curse      Curse  @relation(fields: [curseId], references: [id], onDelete: Cascade)
   difficulty Int
+  curse      Curse  @relation(fields: [curseId], references: [id], onDelete: Cascade)
+  game       Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@id([gameId, curseId])
 }
@@ -115,12 +110,12 @@ model TeamRoundCurse {
   teamId     String
   curseId    String
   roundId    String
-  team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  curse      Curse     @relation(fields: [curseId], references: [id], onDelete: Cascade)
-  round      Round     @relation(fields: [roundId], references: [id], onDelete: Cascade)
   vetoed_at  DateTime?
   lifted_at  DateTime?
   created_at DateTime  @default(now())
+  curse      Curse     @relation(fields: [curseId], references: [id], onDelete: Cascade)
+  round      Round     @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@id([roundId, curseId, teamId, created_at])
 }
@@ -129,12 +124,18 @@ model TeamRoundQuestion {
   teamId      String
   questionId  String
   roundId     String
-  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  round       Round     @relation(fields: [roundId], references: [id], onDelete: Cascade)
   answered_at DateTime?
   answer      String?
   created_at  DateTime  @default(now())
+  photo_url   String?
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  round       Round     @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@id([teamId, questionId, roundId])
+}
+
+enum Role {
+  HIDER
+  SEEKER
 }

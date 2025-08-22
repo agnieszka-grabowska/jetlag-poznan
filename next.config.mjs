@@ -5,6 +5,9 @@ const nextConfig = {
       dynamic: 0,
     },
   },
+  images: {
+    remotePatterns: [new URL("https://ucarecdn.com/**")],
+  },
 };
 
 export default nextConfig;

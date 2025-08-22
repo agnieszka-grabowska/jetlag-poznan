@@ -10,8 +10,7 @@ import { sendNotification } from "@/app/utils/actions";
 import { useGameContext } from "../GameProvider";
 import { useRoundContext } from "../RoundProvider";
 import { useSWRConfig } from "swr";
-import { fetcherPost } from "@/app/helpers";
-import { AnswerQuestionRequest } from "@/app/api/questions/answer/[teamId]/[questionId]/route";
+import Center from "@/app/ui/components/Center/Center";
 
 export default function AnswerForm({
   askedAt,
@@ -45,40 +44,63 @@ export default function AnswerForm({
 function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: string }) {
   const { mutate } = useSWRConfig();
   const params = useParams();
-  const { trigger, isMutating } = useSWRMutation<any, Error, any, AnswerQuestionRequest>(
+  const { trigger, isMutating } = useSWRMutation<any, Error, any, FormData>(
     `/api/questions/answer/${ownerTeamId}/${questionId}`,
-    fetcherPost
+    fetcher
   );
   const { round } = useRoundContext();
   const ownerTeamMembersIds = round.teams
     .find((team) => team.id === ownerTeamId)
     ?.members.map((member) => member.id);
 
+  async function submitAnswer(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const answer: string = event.currentTarget.answer.value;
+    const photo: File = event.currentTarget.photoUrl.files[0];
+
+    if (!photo && !answer) {
+      alert("You have to add photo or text to answer!");
+    }
+
+    const formData = new FormData(event.currentTarget);
+    if (answer) formData.append("answer", answer);
+    if (photo) formData.append("photo", photo);
+
+    trigger(formData).then(async () => {
+      await sendNotification({
+        title: `New answer`,
+        message: answer ?? "Photo 🏞️",
+        targetUsersIds: ownerTeamMembersIds!,
+        url: `/game/${params.gameId}/rounds/${params.roundId}/questions`,
+      });
+      mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
+    });
+  }
+
   return (
-    <form
-      onSubmit={async (event) => {
-        event.preventDefault();
-        const answer: string = event.currentTarget.answer.value;
-        trigger({ answer }).then(async () => {
-          await sendNotification({
-            title: `New answer`,
-            message: answer,
-            targetUsersIds: ownerTeamMembersIds!,
-            url: `/game/${params.gameId}/rounds/${params.roundId}/questions`,
-          });
-          mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
-        });
-      }}
-    >
-      <input type="text" name="answer" required={true} minLength={1} />
+    <form encType="multipart/form-data" onSubmit={submitAnswer}>
+      <input type="text" name="answer" />
+      <label>
+        Upload photo
+        <input type="file" accept="image/*" name="photoUrl" />
+      </label>
       <div className={styles.buttons}>
         <button disabled={isMutating} type="submit">
-          Answer
+          {isMutating ? (
+            <Center>
+              <Spinner />
+            </Center>
+          ) : (
+            "Answer"
+          )}
         </button>
         <button
           type="button"
           onClick={() => {
-            trigger({ answer: "Hiders were unable to answer this question" }).then(async () => {
+            const formData = new FormData();
+            formData.append("answer", "Hiders were unable to answer this question");
+
+            trigger(formData).then(async () => {
               await sendNotification({
                 title: `New answer`,
                 message: "Hiders were unable to answer this question",
@@ -93,7 +115,18 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
           Cannot Answer
         </button>
       </div>
-      {isMutating && <Spinner />}
     </form>
   );
+}
+
+async function fetcher(url: string, options: { arg: FormData }) {
+  const res = await fetch(url, { method: "POST", body: options.arg });
+  if (!res.ok) {
+    const { error } = await res.json();
+    if (error) {
+      throw new Error(error);
+    }
+    throw new Error(res.statusText);
+  }
+  return await res.json();
 }

@@ -6,6 +6,10 @@
   word-break: break-word;
 }
 
+.wrapper img {
+  object-fit: contain;
+}
+
 .wrapper button {
   background-color: #383744;
   color: #fff;
@@ -14,11 +18,6 @@
   min-width: 42px;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.wrapper button:disabled {
-  cursor: not-allowed;
-  background-color: gray;
 }
 
 .wrapper button:not(:disabled):hover {
@@ -80,6 +79,11 @@
 
 .buttons button:last-child {
   background-color: #fb6a35;
+}
+
+.wrapper button:disabled {
+  cursor: not-allowed;
+  background-color: gray;
 }
 
 .askedBy {

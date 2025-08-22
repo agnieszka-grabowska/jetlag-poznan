@@ -6,9 +6,10 @@ import AnswerForm from "./AnswerForm";
 import Item from "@/app/ui/components/Item/Item";
 import { Text } from "@/app/ui/components/text/text";
 import { FlatQuestion } from "@/app/api/games/[gameId]/rounds/[roundId]/questions/route";
+import Image from "next/image";
 
 export function QuestionItem({ question }: { question: FlatQuestion }) {
-  const answerIsPending = question.created_at !== null && !question.answer;
+  const answerIsPending = question.created_at !== null && !question.answer && !question.photoUrl;
 
   return (
     <Item style={answerIsPending ? "orange" : undefined}>
@@ -20,6 +21,9 @@ export function QuestionItem({ question }: { question: FlatQuestion }) {
           </Text>
           {question.details && <p className={styles.details}>{question.details}</p>}
           {question.answer && <p className={styles.answer}>Answer: {question.answer}</p>}
+          {question.photoUrl && (
+            <Image src={question.photoUrl} width={300} height={200} alt="Answer to question" />
+          )}
           {answerIsPending && <TimeLeftToAnswer askedAt={question.created_at!} />}
           {answerIsPending && question.askedBy !== undefined && (
             <AnswerForm
@@ -29,7 +33,9 @@ export function QuestionItem({ question }: { question: FlatQuestion }) {
             />
           )}
         </div>
-        {!question.answer && !answerIsPending && <AskButton questionId={question.id} />}
+        {!question.answer && !question.photoUrl && !answerIsPending && (
+          <AskButton questionId={question.id} />
+        )}
       </div>
     </Item>
   );
