@@ -4,6 +4,11 @@ import { validateSession } from "@/app/api/auth";
 import { Question, TeamRoundQuestion } from "@prisma/client";
 import { uploadFile } from "@uploadcare/upload-client";
 
+export type AnswerQuestionRequest = {
+  answer?: string;
+  photoUrl?: string;
+};
+
 export type AnswerQuestionResponse = {
   question: TeamRoundQuestion & { question: Question };
 };
@@ -17,9 +22,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
   const { questionId, teamId } = await params;
 
-  const formData = await request.formData();
-  const answer = formData.get("answer") as string | null;
-  const photo = formData.get("photo") as File | null;
+  const { answer, photoUrl } = (await request.json()) as AnswerQuestionRequest;
 
   // Throw if the user is not in the target team or not a hider
   const lastRound = await db.teamRound.findFirstOrThrow({
@@ -38,41 +41,13 @@ export async function POST(request: Request, { params }: { params: Params }) {
     },
   });
 
-  if (!photo && !answer) {
+  if (!photoUrl && !answer) {
     return NextResponse.json(
       {
         error: `Your answer can’t be empty. Add text or upload a photo before submitting.`,
       },
       { status: 400 }
     );
-  }
-
-  // Upload to Uploadcare
-  let result = null;
-
-  if (photo) {
-    const publicKey = process.env.UPLOADCARE_PUBLIC_KEY;
-    if (!publicKey) {
-      throw new Error("UPLOADCARE_PUBLIC_KEY must be set");
-    }
-    const buffer = Buffer.from(await photo.arrayBuffer());
-
-    try {
-      result = await uploadFile(buffer, {
-        publicKey,
-        fileName: photo.name,
-        contentType: photo.type,
-      });
-    } catch (err: unknown) {
-      console.error("File upload failed:", err);
-
-      return NextResponse.json(
-        {
-          error: err instanceof Error ? err.message : String(err),
-        },
-        { status: 500 }
-      );
-    }
   }
 
   const answerResponse = await db.teamRoundQuestion.update({
@@ -86,7 +61,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
     data: {
       answered_at: new Date(),
       answer,
-      photo_url: result?.cdnUrl ?? null,
+      photo_url: photoUrl,
     },
     include: {
       question: true,

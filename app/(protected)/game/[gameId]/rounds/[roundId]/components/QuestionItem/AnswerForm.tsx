@@ -12,6 +12,9 @@ import { useRoundContext } from "../RoundProvider";
 import { useSWRConfig } from "swr";
 import Center from "@/app/ui/components/Center/Center";
 import toast from "react-hot-toast";
+import { AnswerQuestionRequest } from "@/app/api/questions/answer/[teamId]/[questionId]/route";
+import { fetcherPost } from "@/app/helpers";
+import { uploadPhoto } from "./uploadPhoto";
 
 export default function AnswerForm({
   askedAt,
@@ -45,9 +48,9 @@ export default function AnswerForm({
 function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: string }) {
   const { mutate } = useSWRConfig();
   const params = useParams();
-  const { trigger, isMutating, error } = useSWRMutation<any, Error, any, FormData>(
+  const { trigger, isMutating, error } = useSWRMutation<any, Error, any, AnswerQuestionRequest>(
     `/api/questions/answer/${ownerTeamId}/${questionId}`,
-    fetcher
+    fetcherPost
   );
   const { round } = useRoundContext();
   const ownerTeamMembersIds = round.teams
@@ -64,13 +67,17 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
       return;
     }
 
-    const formData = new FormData(event.currentTarget);
-    if (answer) formData.append("answer", answer);
-    if (photo) formData.append("photo", photo);
+    let photoUrl;
+    if (photo) {
+      try {
+        photoUrl = await uploadPhoto(photo);
+      } catch (err: unknown) {
+        toast.error(err instanceof Error ? err.message : String(err));
+        return;
+      }
+    }
 
-    alert(photo.size);
-
-    trigger(formData).then(async () => {
+    trigger({ answer, photoUrl }).then(async () => {
       await sendNotification({
         title: `New answer`,
         message: answer ?? "Photo 🏞️",
@@ -88,7 +95,7 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
   }, [error]);
 
   return (
-    <form encType="multipart/form-data" onSubmit={submitAnswer}>
+    <form onSubmit={submitAnswer}>
       <input type="text" name="answer" />
       <label>
         Upload photo
@@ -107,10 +114,7 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
         <button
           type="button"
           onClick={() => {
-            const formData = new FormData();
-            formData.append("answer", "Hiders were unable to answer this question");
-
-            trigger(formData).then(async () => {
+            trigger({ answer: "Hiders were unable to answer this question" }).then(async () => {
               await sendNotification({
                 title: `New answer`,
                 message: "Hiders were unable to answer this question",
@@ -127,22 +131,4 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
       </div>
     </form>
   );
-}
-
-async function fetcher(url: string, options: { arg: FormData }) {
-  const res = await fetch(url, { method: "POST", body: options.arg });
-
-  let data: any;
-  try {
-    data = await res.json();
-  } catch {
-    const text = await res.text();
-    throw new Error(text || res.statusText);
-  }
-
-  if (!res.ok) {
-    throw new Error(data.error || res.statusText);
-  }
-
-  return data;
 }
