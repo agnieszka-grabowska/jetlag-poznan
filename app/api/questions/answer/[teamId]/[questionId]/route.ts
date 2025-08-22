@@ -41,7 +41,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
   if (!photo && !answer) {
     return NextResponse.json(
       {
-        error: `Answer was not provided. Include photo or text.`,
+        error: `Your answer can’t be empty. Add text or upload a photo before submitting.`,
       },
       { status: 400 }
     );
@@ -57,11 +57,22 @@ export async function POST(request: Request, { params }: { params: Params }) {
     }
     const buffer = Buffer.from(await photo.arrayBuffer());
 
-    result = await uploadFile(buffer, {
-      publicKey,
-      fileName: photo.name,
-      contentType: photo.type,
-    });
+    try {
+      result = await uploadFile(buffer, {
+        publicKey,
+        fileName: photo.name,
+        contentType: photo.type,
+      });
+    } catch (err: unknown) {
+      console.error("File upload failed:", err);
+
+      return NextResponse.json(
+        {
+          error: err instanceof Error ? err.message : String(err),
+        },
+        { status: 500 }
+      );
+    }
   }
 
   const answerResponse = await db.teamRoundQuestion.update({

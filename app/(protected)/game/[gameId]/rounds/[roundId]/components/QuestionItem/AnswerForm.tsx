@@ -11,6 +11,7 @@ import { useGameContext } from "../GameProvider";
 import { useRoundContext } from "../RoundProvider";
 import { useSWRConfig } from "swr";
 import Center from "@/app/ui/components/Center/Center";
+import toast from "react-hot-toast";
 
 export default function AnswerForm({
   askedAt,
@@ -44,7 +45,7 @@ export default function AnswerForm({
 function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: string }) {
   const { mutate } = useSWRConfig();
   const params = useParams();
-  const { trigger, isMutating } = useSWRMutation<any, Error, any, FormData>(
+  const { trigger, isMutating, error } = useSWRMutation<any, Error, any, FormData>(
     `/api/questions/answer/${ownerTeamId}/${questionId}`,
     fetcher
   );
@@ -59,7 +60,8 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
     const photo: File = event.currentTarget.photoUrl.files[0];
 
     if (!photo && !answer) {
-      alert("You have to add photo or text to answer!");
+      toast.error("Your answer can’t be empty. Add text or upload a photo before submitting.");
+      return;
     }
 
     const formData = new FormData(event.currentTarget);
@@ -76,6 +78,12 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
       mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
     });
   }
+
+  React.useEffect(() => {
+    if (error) {
+      toast.error(error?.message ?? "Something went wrong.");
+    }
+  }, [error]);
 
   return (
     <form encType="multipart/form-data" onSubmit={submitAnswer}>

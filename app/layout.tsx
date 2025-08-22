@@ -1,6 +1,7 @@
 import "@/app/globals.css";
 import type { Metadata } from "next";
 import { comfortaa } from "@/app/fonts";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Jet Lag Poznań – Hide & Seek Game Assistant",
@@ -15,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={comfortaa.className}>{children}</body>
+      <body className={comfortaa.className}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
