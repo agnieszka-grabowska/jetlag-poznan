@@ -68,6 +68,8 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
     if (answer) formData.append("answer", answer);
     if (photo) formData.append("photo", photo);
 
+    alert(photo.size);
+
     trigger(formData).then(async () => {
       await sendNotification({
         title: `New answer`,
@@ -129,12 +131,18 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
 
 async function fetcher(url: string, options: { arg: FormData }) {
   const res = await fetch(url, { method: "POST", body: options.arg });
-  if (!res.ok) {
-    const { error } = await res.json();
-    if (error) {
-      throw new Error(error);
-    }
-    throw new Error(res.statusText);
+
+  let data: any;
+  try {
+    data = await res.json();
+  } catch {
+    const text = await res.text();
+    throw new Error(text || res.statusText);
   }
-  return await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || res.statusText);
+  }
+
+  return data;
 }
