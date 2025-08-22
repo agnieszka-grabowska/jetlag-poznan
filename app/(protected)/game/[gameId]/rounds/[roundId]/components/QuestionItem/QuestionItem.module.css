@@ -8,6 +8,7 @@
 
 .wrapper img {
   object-fit: contain;
+  width: auto;
 }
 
 .wrapper button {
@@ -67,6 +68,7 @@
 
 .wrapper form input {
   padding: 12px;
+  font-size: 1rem;
 }
 
 .buttons button {
