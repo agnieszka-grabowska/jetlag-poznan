@@ -52,6 +52,9 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
     `/api/questions/answer/${ownerTeamId}/${questionId}`,
     fetcherPost
   );
+
+  const [photoIsUploading, setPhotoIsUploading] = React.useState(false);
+
   const { round } = useRoundContext();
   const ownerTeamMembersIds = round.teams
     .find((team) => team.id === ownerTeamId)
@@ -70,10 +73,13 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
     let photoUrl;
     if (photo) {
       try {
+        setPhotoIsUploading(true);
         photoUrl = await uploadPhoto(photo);
       } catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : String(err));
         return;
+      } finally {
+        setPhotoIsUploading(false);
       }
     }
 
@@ -102,8 +108,8 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
         <input type="file" accept="image/*" name="photoUrl" />
       </label>
       <div className={styles.buttons}>
-        <button disabled={isMutating} type="submit">
-          {isMutating ? (
+        <button disabled={isMutating || photoIsUploading} type="submit">
+          {isMutating || photoIsUploading ? (
             <Center>
               <Spinner />
             </Center>
@@ -124,7 +130,7 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
               mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
             });
           }}
-          disabled={isMutating}
+          disabled={isMutating || photoIsUploading}
         >
           Cannot Answer
         </button>
