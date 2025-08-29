@@ -13,6 +13,7 @@
   "dependencies": {
     "@prisma/client": "^5.19.0",
     "@uidotdev/usehooks": "^2.4.1",
+    "@uploadcare/nextjs-loader": "^1.0.0",
     "@uploadcare/upload-client": "^6.17.0",
     "argon2": "0.31.2",
     "create-next-app": "^15.4.5",
