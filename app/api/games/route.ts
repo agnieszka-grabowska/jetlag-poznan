@@ -27,7 +27,11 @@ export async function GET() {
       },
     },
     include: {
-      rounds: true,
+      rounds: {
+        orderBy: {
+          start_time: "asc",
+        },
+      },
     },
   });
 
