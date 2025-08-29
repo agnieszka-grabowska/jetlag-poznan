@@ -1,10 +1,9 @@
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 import { NextResponse } from "next/server";
-import { Round } from "@prisma/client";
 
 export type PostRoundResponse = {
-  round: Round;
+  roundId: string;
 };
 
 type Params = Promise<{ gameId: string }>;
@@ -31,10 +30,7 @@ export async function POST(_request: Request, { params }: { params: Params }) {
     },
   });
   if (unfinishedRound) {
-    return NextResponse.json(null, {
-      statusText: "There is an unfinished round!",
-      status: 400,
-    });
+    return NextResponse.json({ roundId: unfinishedRound.roundId });
   }
 
   const previousRounds = await db.round.findMany({
@@ -55,6 +51,11 @@ export async function POST(_request: Request, { params }: { params: Params }) {
     select: {
       end_time: true,
       teams: {
+        orderBy: {
+          team: {
+            name: "asc",
+          },
+        },
         include: {
           team: {
             select: {
@@ -98,5 +99,5 @@ export async function POST(_request: Request, { params }: { params: Params }) {
     },
   });
 
-  return NextResponse.json<PostRoundResponse>({ round });
+  return NextResponse.json<PostRoundResponse>({ roundId: round.id });
 }

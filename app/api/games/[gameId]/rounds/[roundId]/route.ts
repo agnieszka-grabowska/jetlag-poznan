@@ -34,6 +34,11 @@ export async function GET(_request: Request, { params }: { params: Params }) {
     },
     include: {
       teams: {
+        orderBy: {
+          team: {
+            name: "asc",
+          },
+        },
         include: {
           team: {
             include: {
