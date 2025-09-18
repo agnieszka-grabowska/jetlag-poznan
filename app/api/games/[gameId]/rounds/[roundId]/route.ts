@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
-import { Role, Round } from "@prisma/client";
+import { Role, Round, TeamRoundCurse } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 
 export type GetRoundResponse = {
   round: Round & {
-    teams: { members: { id: string; username: string }[]; name: string; role: Role; id: string }[];
+    teams: TeamFlat[];
   };
+};
+
+export type TeamFlat = {
+  members: { id: string; username: string }[];
+  name: string;
+  role: Role;
+  id: string;
+  curses: TeamRoundCurse[];
 };
 
 type Params = Promise<{ gameId: string; roundId: string }>;
@@ -42,6 +50,7 @@ export async function GET(_request: Request, { params }: { params: Params }) {
         include: {
           team: {
             include: {
+              curses: true,
               members: {
                 select: {
                   id: true,
@@ -64,6 +73,7 @@ export async function GET(_request: Request, { params }: { params: Params }) {
           role: team.role,
           name: team.team.name,
           members: team.team.members,
+          curses: team.team.curses,
         };
       }),
     },

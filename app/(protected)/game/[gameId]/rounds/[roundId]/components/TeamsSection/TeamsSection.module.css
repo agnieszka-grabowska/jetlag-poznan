@@ -15,3 +15,10 @@
   border-radius: 12px;
   padding: 12px 16px;
 }
+
+.veto {
+  background-color: #eb3838;
+  margin: 0px -16px 16px;
+  padding: 16px;
+  color: white;
+}

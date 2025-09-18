@@ -7,9 +7,10 @@ import Curses from "../../curses/Curses";
 import { useRoundContext } from "../RoundProvider";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
-import { fetcher } from "@/app/helpers";
+import { fetcher, formatTime } from "@/app/helpers";
 import { GetTeamResponse } from "@/app/api/games/[gameId]/rounds/[roundId]/teams/[teamId]/route";
 import TeamCardLoader from "./TeamCardLoader";
+import useVetoCountdown from "../useVetoTime";
 
 export default function TeamsSection() {
   const { round } = useRoundContext();
@@ -52,7 +53,18 @@ function TeamCard({ teamId }: { teamId: string }) {
         {team.name} <Tag>{team.coins.toString()}</Tag>
       </div>
       <ThrowCurse teamId={team.id} coins={team.coins} />
+      <VetoPeriod teamId={team.id} />
       <Curses teamId={team.teamId}></Curses>
     </div>
   );
+}
+
+export function VetoPeriod({ teamId }: { teamId: string }) {
+  const vetoPeriod = useVetoCountdown(teamId);
+
+  if (vetoPeriod > 0) {
+    return <div className={styles.veto}>Veto: {formatTime(vetoPeriod)}</div>;
+  }
+
+  return;
 }
