@@ -7,7 +7,7 @@ export type LiftCurseResponse = {
   curse: TeamRoundCurse;
 };
 
-type Params = Promise<{ curseId: string; createdAt: Date; targetTeamId: string }>;
+type Params = Promise<{ curseId: string; createdAt: string; targetTeamId: string }>;
 
 export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();

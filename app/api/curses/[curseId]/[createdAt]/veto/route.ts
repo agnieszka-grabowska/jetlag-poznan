@@ -7,7 +7,7 @@ export type VetoCurseResponse = {
   curse: TeamRoundCurse;
 };
 
-type Params = Promise<{ curseId: string; createdAt: Date }>;
+type Params = Promise<{ curseId: string; createdAt: string }>;
 
 export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();

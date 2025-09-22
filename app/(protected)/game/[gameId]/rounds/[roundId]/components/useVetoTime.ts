@@ -1,13 +1,15 @@
+import useCountdown from "@/app/hooks/use-countdown";
 import { useRoundContext } from "./RoundProvider";
-import { useEffect, useState, useMemo } from "react";
 
-export default function useVetoCountdown(teamId: string) {
+const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+export default function useVetoCountdown(teamId: string): number {
   const { round } = useRoundContext();
 
   const team = round.teams.find((team) => team.id === teamId);
 
   if (!team) {
-    return 0;
+    throw Error(`Team with id ${teamId} not found`);
   }
 
   const vetoedCurses = team.curses
@@ -15,55 +17,29 @@ export default function useVetoCountdown(teamId: string) {
     .filter((vetoed_at) => vetoed_at !== null)
     .sort();
 
-  const vetoedDates = useMemo(() => vetoedCurses, vetoedCurses);
-  const vetoPeriod = useCountdownSum(vetoedDates);
+  const scheduledCurses: Array<Date> = [];
 
-  return vetoPeriod;
-}
-
-const FIFTEEN_MINUTES = 15 * 60 * 1000;
-
-function useCountdownSum(times: Date[]) {
-  const [remaining, setRemaining] = useState(0);
-
-  const datesWithCurseTime: Array<Date> = [];
-
-  times.forEach((date, index) => {
-    const prevCurseDate = new Date(datesWithCurseTime[index - 1])?.getTime() || 0;
+  vetoedCurses.forEach((date, index) => {
+    const prevCurseDate = new Date(scheduledCurses[index - 1])?.getTime() || 0;
     const currCurseDate = new Date(date).getTime();
 
     if (prevCurseDate + FIFTEEN_MINUTES > currCurseDate) {
-      datesWithCurseTime[index] = new Date(prevCurseDate + FIFTEEN_MINUTES);
+      scheduledCurses[index] = new Date(prevCurseDate + FIFTEEN_MINUTES);
     } else {
-      datesWithCurseTime[index] = date;
+      scheduledCurses[index] = date;
     }
   });
 
-  useEffect(() => {
-    const update = () => {
-      const now = Date.now();
-      let total = 0;
+  const now = Date.now();
+  const lastCurse = scheduledCurses.at(-1);
+  const startTime = new Date(lastCurse || 0).getTime();
+  const endTime = startTime + FIFTEEN_MINUTES;
+  const vetoTimeLeft = endTime - now;
 
-      for (let i = 0; i < datesWithCurseTime.length; i++) {
-        const date = datesWithCurseTime[i];
-        const startTime = new Date(date).getTime();
-        const endTime = startTime + FIFTEEN_MINUTES;
-        const diff = endTime - now;
+  const vetoPeriod = useCountdown({
+    period: vetoTimeLeft,
+    startTime: new Date(),
+  });
 
-        if (diff > 0) {
-          total += diff + datesWithCurseTime.slice(i + 1).length * FIFTEEN_MINUTES;
-          break;
-        }
-      }
-      if (total <= 0) {
-        clearInterval(interval);
-      }
-      setRemaining(total);
-    };
-
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, [times]);
-
-  return remaining;
+  return vetoPeriod || 0;
 }
