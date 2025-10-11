@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import styles from "./TeamCurseItem.module.css";
+import styles from "./CurseItem.module.css";
 import { fetcherPost } from "@/app/helpers";
 import { useSWRConfig } from "swr";
 import useSWRMutation from "swr/mutation";
@@ -24,7 +24,7 @@ export default function VetoCurseButton({
   );
 
   async function vetoCurse() {
-    trigger().then(() => mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/curses`));
+    trigger().then(() => mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`));
   }
 
   return (

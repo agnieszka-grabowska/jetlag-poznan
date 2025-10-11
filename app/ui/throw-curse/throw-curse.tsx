@@ -42,8 +42,7 @@ export default function ThrowCurse({
             }
 
             trigger().then(() => {
-              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/curses`);
-              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/teams/${teamId}`);
+              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
             });
           }}
         >

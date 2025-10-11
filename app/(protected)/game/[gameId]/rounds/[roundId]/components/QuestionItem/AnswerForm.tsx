@@ -90,7 +90,7 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
         targetUsersIds: ownerTeamMembersIds!,
         url: `/game/${params.gameId}/rounds/${params.roundId}/questions`,
       });
-      mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
+      mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
     });
   }
 
@@ -127,7 +127,7 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
                 targetUsersIds: ownerTeamMembersIds!,
                 url: `/game/${params.gameId}/rounds/${params.roundId}/questions`,
               });
-              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
+              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
             });
           }}
           disabled={isMutating || photoIsUploading}

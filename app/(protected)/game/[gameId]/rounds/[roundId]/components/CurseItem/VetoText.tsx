@@ -1,4 +1,4 @@
-import styles from "./TeamCurseItem.module.css";
+import styles from "./CurseItem.module.css";
 
 export default function VetoText({ vetoedAt }: { vetoedAt: Date }) {
   return (

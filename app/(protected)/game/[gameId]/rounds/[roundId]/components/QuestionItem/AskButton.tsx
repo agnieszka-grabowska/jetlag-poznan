@@ -39,7 +39,7 @@ function Button({ questionId }: { questionId: string }) {
     <button
       onClick={() => {
         trigger().then(() => {
-          mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/questions`);
+          mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
         });
       }}
       disabled={(jailTimeLeft ?? 1) > 0 || isMutating}

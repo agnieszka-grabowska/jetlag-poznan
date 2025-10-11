@@ -5,17 +5,18 @@ import TimeLeftToAnswer from "./TimeLeftToAnswer";
 import AnswerForm from "./AnswerForm";
 import Item from "@/app/ui/components/Item/Item";
 import { Text } from "@/app/ui/components/text/text";
-import { FlatQuestion } from "@/app/api/games/[gameId]/rounds/[roundId]/questions/route";
 import UploadcareImage from "@uploadcare/nextjs-loader";
+import { useTeamDetails } from "./useTeamDetails";
+import { QuestionModel } from "../../questions/useQuestions";
 
-export function QuestionItem({ question }: { question: FlatQuestion }) {
-  const answerIsPending = question.created_at !== null && !question.answer && !question.photoUrl;
+export function QuestionItem({ question }: { question: QuestionModel }) {
+  const answerIsPending = question.createdAt && !question.answer && !question.photoUrl;
 
   return (
     <Item style={answerIsPending ? "orange" : undefined}>
       <div className={`${styles.wrapper}`}>
         <div style={{ width: "100%" }}>
-          {question.askedBy && <p className={styles.askedBy}>{question.askedBy.name}</p>}
+          {question.teamId && <AskedBy teamId={question.teamId} />}
           <Text type="title" tags={[{ children: question.cost.toString() }]}>
             {question.content}
           </Text>
@@ -29,11 +30,11 @@ export function QuestionItem({ question }: { question: FlatQuestion }) {
               alt="Answer to question"
             />
           )}
-          {answerIsPending && <TimeLeftToAnswer askedAt={question.created_at!} />}
-          {answerIsPending && question.askedBy !== undefined && (
+          {answerIsPending && <TimeLeftToAnswer askedAt={question.createdAt!} />}
+          {answerIsPending && question.teamId !== undefined && (
             <AnswerForm
-              askedAt={question.created_at!}
-              ownerTeamId={question.askedBy.id}
+              askedAt={question.createdAt!}
+              ownerTeamId={question.teamId}
               questionId={question.id}
             />
           )}
@@ -44,4 +45,12 @@ export function QuestionItem({ question }: { question: FlatQuestion }) {
       </div>
     </Item>
   );
+}
+
+type AskedByProps = { teamId: string };
+
+function AskedBy({ teamId }: AskedByProps) {
+  const { teamDetails } = useTeamDetails(teamId);
+
+  return <p className={styles.askedBy}>{teamDetails.name}</p>;
 }

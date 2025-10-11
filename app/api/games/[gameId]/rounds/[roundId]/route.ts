@@ -1,20 +1,33 @@
 import { NextResponse } from "next/server";
-import { Role, Round, TeamRoundCurse } from "@prisma/client";
+import { Role, TeamRoundCurse, TeamRoundQuestion } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 
-export type GetRoundResponse = {
-  round: Round & {
-    teams: TeamFlat[];
-  };
+type Member = {
+  id: string;
+  username: string;
 };
-
-export type TeamFlat = {
-  members: { id: string; username: string }[];
+export type Team = {
+  id: string;
   name: string;
   role: Role;
+  coins: number;
+  members: Array<Member>;
+};
+
+type Round = {
   id: string;
-  curses: TeamRoundCurse[];
+  gameId: string;
+  start_time: Date | null;
+  end_time: Date | null;
+  winner_id: string | null;
+  teams: Array<Team>;
+  curses: Array<TeamRoundCurse>;
+  questions: Array<TeamRoundQuestion>;
+};
+
+export type GetRoundResponse = {
+  round: Round;
 };
 
 type Params = Promise<{ gameId: string; roundId: string }>;
@@ -41,6 +54,8 @@ export async function GET(_request: Request, { params }: { params: Params }) {
       },
     },
     include: {
+      curses: true,
+      questions: true,
       teams: {
         orderBy: {
           team: {
@@ -50,7 +65,6 @@ export async function GET(_request: Request, { params }: { params: Params }) {
         include: {
           team: {
             include: {
-              curses: true,
               members: {
                 select: {
                   id: true,
@@ -67,20 +81,20 @@ export async function GET(_request: Request, { params }: { params: Params }) {
   return NextResponse.json<GetRoundResponse>({
     round: {
       ...round,
-      teams: round.teams.map((team) => {
+      teams: round.teams.map((team): Team => {
         return {
           id: team.teamId,
           role: team.role,
+          coins: team.coins,
           name: team.team.name,
           members: team.team.members,
-          curses: team.team.curses,
         };
       }),
     },
   });
 }
 
-export type DeleteRoundResponse = { round: Round };
+export type DeleteRoundResponse = { roundId: string };
 export async function DELETE(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
 
@@ -123,5 +137,5 @@ export async function DELETE(_request: Request, { params }: { params: Params }) 
     }
   }
 
-  return NextResponse.json<DeleteRoundResponse>({ round });
+  return NextResponse.json<DeleteRoundResponse>({ roundId });
 }

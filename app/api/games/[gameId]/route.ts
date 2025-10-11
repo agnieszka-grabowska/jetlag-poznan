@@ -1,10 +1,17 @@
 import { db } from "../../db";
 import { NextResponse } from "next/server";
-import { Curse, Game, GameCurse, Question } from "@prisma/client";
+import { Game, Question } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 
+type GameCurse = {
+  curseId: string;
+  name: string;
+  effect: string;
+  difficulty: number;
+};
+
 export type GetGameResponse = {
-  game: Game & { game_curses: (GameCurse & Curse)[]; game_questions: Question[] };
+  game: Game & { game_curses: Array<GameCurse>; game_questions: Question[] };
 };
 
 type Params = Promise<{ gameId: string }>;
@@ -35,8 +42,15 @@ export async function GET(_: Request, { params }: { params: Params }) {
     },
     include: {
       game_curses: {
-        include: {
-          curse: true,
+        select: {
+          curseId: true,
+          difficulty: true,
+          curse: {
+            select: {
+              effect: true,
+              name: true,
+            },
+          },
         },
       },
       game_questions: true,
@@ -46,8 +60,13 @@ export async function GET(_: Request, { params }: { params: Params }) {
   return NextResponse.json<GetGameResponse>({
     game: {
       ...game,
-      game_curses: game.game_curses.map((gameCurse) => {
-        return { ...gameCurse, ...gameCurse.curse };
+      game_curses: game.game_curses.map((gameCurse): GameCurse => {
+        return {
+          curseId: gameCurse.curseId,
+          difficulty: gameCurse.difficulty,
+          effect: gameCurse.curse.effect,
+          name: gameCurse.curse.name,
+        };
       }),
     },
   });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import styles from "./TeamCurseItem.module.css";
+import styles from "./CurseItem.module.css";
 import { fetcherPost } from "@/app/helpers";
 import useSWRMutation from "swr/mutation";
 import Spinner from "@/app/ui/components/spinner/spinner";
@@ -26,7 +26,7 @@ export default function LiftCurseButton({
   );
 
   function liftCurse() {
-    trigger().then(() => mutate(`/api/games/${params.gameId}/rounds/${params.roundId}/curses`));
+    trigger().then(() => mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`));
   }
 
   return (
