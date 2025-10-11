@@ -17,7 +17,12 @@ export default function RoundProvider({ children }: { children: ReactNode }) {
   const { data, isLoading, error } = useSWR<GetRoundResponse, any, any, any>(
     `/api/games/${params.gameId}/rounds/${params.roundId}`,
     fetcher,
-    { refreshInterval: 3000 }
+    {
+      refreshInterval: (latestData: GetRoundResponse) => {
+        if (latestData?.round.winner_id) return 0;
+        return 3000;
+      },
+    }
   );
 
   if (error) {
