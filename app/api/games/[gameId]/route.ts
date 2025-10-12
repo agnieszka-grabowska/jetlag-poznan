@@ -54,7 +54,11 @@ export async function GET(_: Request, { params }: { params: Params }) {
         },
       },
       game_questions: true,
-      rounds: true,
+      rounds: {
+        orderBy: {
+          start_time: "asc",
+        },
+      },
     },
   });
 

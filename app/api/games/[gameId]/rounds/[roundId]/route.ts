@@ -54,7 +54,11 @@ export async function GET(_request: Request, { params }: { params: Params }) {
       },
     },
     include: {
-      curses: true,
+      curses: {
+        orderBy: {
+          created_at: "desc",
+        },
+      },
       questions: true,
       teams: {
         orderBy: {
