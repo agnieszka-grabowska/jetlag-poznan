@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { NextResponse } from "next/server";
-import { Game, Question } from "@prisma/client";
+import { Game, Question, Round } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 
 type GameCurse = {
@@ -11,7 +11,7 @@ type GameCurse = {
 };
 
 export type GetGameResponse = {
-  game: Game & { game_curses: Array<GameCurse>; game_questions: Question[] };
+  game: Game & { game_curses: Array<GameCurse>; game_questions: Question[]; rounds: Round[] };
 };
 
 type Params = Promise<{ gameId: string }>;
@@ -54,6 +54,7 @@ export async function GET(_: Request, { params }: { params: Params }) {
         },
       },
       game_questions: true,
+      rounds: true,
     },
   });
 

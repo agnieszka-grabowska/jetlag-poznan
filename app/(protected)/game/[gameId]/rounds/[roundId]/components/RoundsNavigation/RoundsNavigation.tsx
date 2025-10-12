@@ -1,25 +1,24 @@
-import { serverFetch } from "@/app/server-fetch";
+"use client";
+
 import styles from "./RoundsNavigation.module.css";
-import { GetRoundsResponse } from "@/app/api/games/[gameId]/rounds/route";
 import Round from "./Round";
+import { usePathname } from "next/navigation";
+import { useGameContext } from "../GameProvider";
 
-export default async function RoundsNavigation({
-  params,
-}: {
-  params: { gameId: string; roundId: string };
-}) {
-  const response = await serverFetch(`/api/games/${params.gameId}/rounds`);
+export default function RoundsNavigation() {
+  const { game } = useGameContext();
 
-  if (!response.ok) {
-    return <p>Error</p>;
+  const pathname = usePathname();
+  const currectPageIsRules = pathname.endsWith("rules");
+
+  if (!currectPageIsRules) {
+    return;
   }
-
-  const { rounds }: GetRoundsResponse = await response.json();
 
   return (
     <nav>
       <ol className={styles.nav}>
-        {rounds.map((round, index) => (
+        {game.rounds.map((round, index) => (
           <Round round={round} key={round.id} index={index} />
         ))}
       </ol>

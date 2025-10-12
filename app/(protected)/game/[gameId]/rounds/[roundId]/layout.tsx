@@ -20,7 +20,7 @@ export default async function Layout({
       <GameProvider>
         <RoundProvider>
           <TopNavigation />
-          <RoundsNavigation params={await params} />
+          <RoundsNavigation />
           <main style={{ overflow: "auto" }}>{children}</main>
         </RoundProvider>
       </GameProvider>
