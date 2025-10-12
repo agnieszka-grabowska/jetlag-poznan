@@ -1,7 +1,21 @@
+.pastCurse {
+  color: #8f8f8f;
+}
+
+.pastCurse .createdAt {
+  color: #b8b8b8;
+}
+
+.pastCurse .team {
+  color: #7a96cb;
+}
+
 .nameWrapper {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .name {
@@ -45,7 +59,7 @@
 }
 
 .vetoText {
-  color: #eb3838;
+  color: #e28d8d;
   font-weight: 500;
   font-size: 0.75rem;
   margin-block-start: 12px;
@@ -61,5 +75,4 @@
 .createdAt {
   color: #6c757d;
   font-size: 12px;
-  margin-bottom: 8px;
 }

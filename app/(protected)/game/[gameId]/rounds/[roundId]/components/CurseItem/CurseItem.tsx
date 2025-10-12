@@ -4,7 +4,6 @@ import styles from "./CurseItem.module.css";
 import { Text } from "@/app/ui/components/text/text";
 import LiftCurseButton from "./LiftCurseButton";
 import VetoCurseButton from "./VetoCurseButton";
-import VetoText from "./VetoText";
 import useUserTeam from "@/app/hooks/use_user_team";
 import { useRoundContext } from "../RoundProvider";
 import Item from "@/app/ui/components/Item/Item";
@@ -26,22 +25,30 @@ export default function CurseItem({ curse }: { curse: TeamRoundCurse }) {
 
   return (
     <Item style={curseIsActive ? "red" : "default"}>
-      <div>
-        {targetTeamName && !userIsHider && (
-          <p className={styles.team} style={{ color: `${isTarget ? "red" : undefined}` }}>
-            {isTarget ? "You!" : targetTeamName}
-          </p>
-        )}
+      <div className={curseIsActive ? "" : styles.pastCurse}>
+        {!isTarget && !userIsHider && <p className={styles.team}>{targetTeamName}</p>}
         <div className={styles.nameWrapper}>
           <Text type="title">{curseDetails.name}</Text>
-          {!curseIsActive && <p>{curse.lifted_at ? "✅" : "❌"}</p>}
+          <p className={styles.createdAt}>
+            {new Date(curse.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+            {curse.lifted_at &&
+              " - " +
+                new Date(curse.lifted_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+
+            {curse.vetoed_at &&
+              " - " +
+                new Date(curse.vetoed_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+          </p>
         </div>
-        <p className={styles.createdAt}>
-          {new Date(curse.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
         {curseIsActive && (
           <>
             <Text type="description">{curseDetails.effect}</Text>
@@ -57,8 +64,8 @@ export default function CurseItem({ curse }: { curse: TeamRoundCurse }) {
             )}
           </>
         )}
+        {curse.vetoed_at && <p className={styles.vetoText}>VETOED</p>}
       </div>
-      {curse.vetoed_at && !round.end_time && <VetoText vetoedAt={curse.vetoed_at}></VetoText>}
     </Item>
   );
 }
