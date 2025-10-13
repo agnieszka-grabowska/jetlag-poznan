@@ -11,6 +11,9 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@liveblocks/client": "^3.8.1",
+    "@liveblocks/node": "^3.8.1",
+    "@liveblocks/react": "^3.8.1",
     "@prisma/client": "^5.19.0",
     "@uidotdev/usehooks": "^2.4.1",
     "@uploadcare/nextjs-loader": "^1.0.0",

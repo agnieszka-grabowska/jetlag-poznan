@@ -3,12 +3,16 @@ import React from "react";
 import { MapContainer, Popup, TileLayer, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { DISTRICTS } from "@/app/districts";
-import LocationMarker from "./LocationMarker/LocationMarker";
+import LocationMarker, { UserMarker } from "./LocationMarker/LocationMarker";
+import { useOthers } from "@liveblocks/react/suspense";
+import { UserLocation } from "@/app/(protected)/game/[gameId]/rounds/[roundId]/components/UserLocationProvider";
 
 export default function Map() {
   // Coordinates for Poznań, Poland
   const latitude = 52.407775;
   const longitude = 16.912451;
+
+  const others = useOthers();
 
   return (
     <MapContainer
@@ -31,6 +35,13 @@ export default function Map() {
             positions={positions}
           />
         );
+      })}
+      {others.map(({ presence, id }) => {
+        const location = presence as UserLocation | undefined;
+        if (!location?.latitude || !id) {
+          return;
+        }
+        return <UserMarker location={location} key={id} userId={id} />;
       })}
       <LocationMarker />
     </MapContainer>
