@@ -39,7 +39,7 @@ export function useSeekerViewQuestions() {
         photoUrl: questionDetails?.photo_url ?? null,
       };
     })
-    .sort((a, b) => compareFn(a.createdAt, b.createdAt));
+    .sort(compareQuestions);
 
   return { questions };
 }
@@ -69,14 +69,21 @@ export function useHiderViewQuestions() {
         photoUrl: q.photo_url,
       };
     })
-    .sort((a, b) => compareFn(a.createdAt, b.createdAt));
+    .sort(compareQuestions);
 
   return { questions };
 }
 
-function compareFn(a: Date | null, b: Date | null) {
-  const aDate = a ? new Date(a).getMilliseconds() : 0;
-  const bDate = b ? new Date(b).getMilliseconds() : 0;
+function compareQuestions(a: QuestionModel, b: QuestionModel) {
+  const aIsPending = a.createdAt && !(a.answer || a.photoUrl) ? 1 : 0;
+  const bIsPending = b.createdAt && !(b.answer || b.photoUrl) ? 1 : 0;
+
+  if (aIsPending !== bIsPending) {
+    return bIsPending - aIsPending;
+  }
+
+  const aDate = a.createdAt ? new Date(a.createdAt).getMilliseconds() : 0;
+  const bDate = b.createdAt ? new Date(b.createdAt).getMilliseconds() : 0;
 
   return bDate - aDate;
 }
