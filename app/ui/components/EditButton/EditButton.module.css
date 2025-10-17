@@ -1,0 +1,11 @@
+.editButton {
+  padding: 6px;
+  transition: all 400ms;
+  color: #929292;
+}
+
+.editButton:hover {
+  transition: all 200ms;
+  color: #484848;
+  transform: rotate(5deg);
+}
