@@ -1,8 +1,7 @@
-import Link from "next/link";
-import { Text } from "../components/text/text";
 import { GetCursesResponse } from "@/app/api/curses/route";
 import { serverFetch } from "@/app/server-fetch";
 import { JSX } from "react";
+import CurseItem from "@/app/ui/components/CurseItem/CurseItem";
 
 export async function Curses(): Promise<JSX.Element> {
   const response = await serverFetch("/api/curses");
@@ -15,21 +14,15 @@ export async function Curses(): Promise<JSX.Element> {
 
   return (
     <>
-      {data.curses.map((curse) => {
-        return (
-          <li key={curse.id}>
-            <Link href={`/curses/${curse.id}`}>
-              <Text
-                type="title"
-                tags={[{ children: `Difficulty: ${curse.defaultDifficulty}`, hue: 270 }]}
-              >
-                {curse.name}
-              </Text>
-              <Text type="description">{curse.effect}</Text>
-            </Link>
-          </li>
-        );
-      })}
+      {data.curses.map((curse) => (
+        <CurseItem
+          key={curse.id}
+          defaultDifficulty={curse.defaultDifficulty}
+          effect={curse.effect}
+          id={curse.id}
+          name={curse.name}
+        />
+      ))}
     </>
   );
 }

@@ -1,0 +1,14 @@
+.deleteButton {
+  background-color: unset;
+  border: unset;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 400ms;
+  color: rgb(219, 85, 85);
+}
+
+.deleteButton:hover {
+  color: rgb(208, 51, 51);
+  transform: rotate(5deg);
+  transition: all 200ms;
+}

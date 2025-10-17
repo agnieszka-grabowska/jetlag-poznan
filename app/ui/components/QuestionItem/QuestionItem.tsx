@@ -1,9 +1,8 @@
-import styles from "./QuestionItem.module.css";
-import Link from "next/link";
-import { FaPen } from "react-icons/fa6";
 import { Text } from "../text/text";
 import { TagProps } from "../tag/tag";
-import DeleteQuestionButton from "./DeleteQuestionButton";
+import DeleteButton from "@/app/ui/components/DeleteButton/DeleteButton";
+import EditButton from "@/app/ui/components/EditButton/EditButton";
+import ItemFlexWrapper from "../ItemFlexWrapper/ItemFlexWrapper";
 
 interface QuestionItemProps {
   id: string;
@@ -20,18 +19,16 @@ export default function QuestionItem({ id, content, type, cost, details }: Quest
   }
 
   return (
-    <li>
+    <ItemFlexWrapper>
       <div>
         <Text type="title" tags={tags}>
           {content}
         </Text>
         {details && <Text type="description">{details}</Text>}
       </div>
-      <Link href={`/questions/${id}`} aria-label="edit">
-        <FaPen />
-      </Link>
-      <DeleteQuestionButton questionId={id} />
-    </li>
+      <EditButton href={`/questions/${id}`} />
+      <DeleteButton url={`/api/questions/${id}`} />
+    </ItemFlexWrapper>
   );
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "./DeleteButton.module.css";
 import { fetcherDelete } from "@/app/helpers";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -8,12 +9,13 @@ import useSWRMutation from "swr/mutation";
 import Spinner from "../spinner/spinner";
 import { DeleteQuestionsResponse } from "@/app/api/questions/[id]/route";
 
-interface DeleteQuestionButtonProps {
-  questionId: string;
+interface DeleteButtonProps {
+  url: string;
 }
-export default function DeleteQuestionButton({ questionId }: DeleteQuestionButtonProps) {
+
+export default function DeleteButton({ url }: DeleteButtonProps) {
   const { trigger, isMutating } = useSWRMutation<DeleteQuestionsResponse, any, any, any>(
-    `/api/questions/${questionId}`,
+    url,
     fetcherDelete
   );
   const router = useRouter();
@@ -27,8 +29,13 @@ export default function DeleteQuestionButton({ questionId }: DeleteQuestionButto
   }
 
   return (
-    <button aria-label="delete" onClick={handleDelete} disabled={isMutating}>
-      {isMutating ? <Spinner /> : <FaRegTrashCan />}
+    <button
+      aria-label="delete"
+      onClick={handleDelete}
+      disabled={isMutating}
+      className={styles.deleteButton}
+    >
+      {isMutating ? <Spinner /> : <FaRegTrashCan size={20} />}
     </button>
   );
 }
