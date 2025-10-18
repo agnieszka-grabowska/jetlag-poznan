@@ -46,3 +46,19 @@ export async function fetcherDelete(url: string) {
     }
   });
 }
+
+export async function fetcherPut<T>(url: string, options?: { arg: T }) {
+  return fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(options?.arg),
+  }).then(async (res) => {
+    if (res.ok) {
+      return res.json();
+    } else {
+      throw new Error(res.statusText);
+    }
+  });
+}

@@ -1,7 +1,7 @@
 import { Text } from "@/app/ui/components/text/text";
 import EditButton from "../EditButton/EditButton";
-import DeleteButton from "../DeleteButton/DeleteButton";
 import ItemFlexWrapper from "../ItemFlexWrapper/ItemFlexWrapper";
+import { DeleteCurseButton } from "@/app/ui/components/DeleteButton/DeleteButton";
 
 interface CurseItemProps {
   id: string;
@@ -20,7 +20,7 @@ export default function CurseItem({ id, defaultDifficulty, name, effect }: Curse
         <Text type="description">{effect}</Text>
       </div>
       <EditButton href={`/curses/${id}`} />
-      <DeleteButton url={`/api/curses/${id}`} />
+      <DeleteCurseButton id={id} />
     </ItemFlexWrapper>
   );
 }

@@ -13,10 +13,11 @@ export async function serverFetch(url: string, requestInit?: RequestInit) {
 }
 
 function fetchWithBaseUrl(url: string, requestInit?: RequestInit) {
-  let base_url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : "https://jetlag-poznan.vercel.app";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  return fetch(`${base_url}${url}`, { ...requestInit });
+  if (!API_URL) {
+    throw new Error("Environment variable NEXT_PUBLIC_API_URL is not defined.");
+  }
+
+  return fetch(`${API_URL}${url}`, { ...requestInit });
 }

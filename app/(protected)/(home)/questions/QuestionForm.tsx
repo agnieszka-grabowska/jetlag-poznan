@@ -1,41 +1,46 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { PostQuestionsRequest } from "@/app/api/questions/route";
 import { Button } from "@/app/ui/components/button/button";
 import Form from "@/app/ui/components/Form/Form";
 import { JSX } from "react";
+import useSWRMutation from "swr/mutation";
+import { createQuestion, editQuestion } from "@/app/lib/questions";
+import { QuestionRequest } from "@/app/api/questions/questions-types";
+import Spinner from "@/app/ui/components/spinner/spinner";
 
-export function QuestionForm({
-  type,
-  id,
-  initialValues,
-}: {
-  type: "create" | "edit";
-  id?: string;
-  initialValues?: PostQuestionsRequest;
-}): JSX.Element {
+interface CreateQuestion {
+  type: "create";
+  id?: never;
+  initialValues?: never;
+}
+
+interface EditQuestion {
+  type: "edit";
+  id: string;
+  initialValues: QuestionRequest;
+}
+
+type QuestionFormProps = EditQuestion | CreateQuestion;
+
+export function QuestionForm({ type, id, initialValues }: QuestionFormProps): JSX.Element {
+  const fetcher = (_: string, { arg }: { arg: QuestionRequest }) => {
+    return type === "create" ? createQuestion(arg) : editQuestion(id, arg);
+  };
+  const { trigger, isMutating } = useSWRMutation("questions", fetcher);
+
   const router = useRouter();
   return (
     <Form
       onSubmit={(e) => {
         e.preventDefault();
-        const requestBody: PostQuestionsRequest = {
+        const requestBody: QuestionRequest = {
           content: e.currentTarget.content.value,
           cost: parseInt(e.currentTarget.cost.value),
           type: e.currentTarget.type.value,
           details: e.currentTarget.details.value,
         };
-        fetch(type === "create" ? "/api/questions" : `/api/questions/${id}`, {
-          method: type === "create" ? "POST" : "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }).then((res) => {
-          if (res.ok) {
-            router.push("/");
-          }
-        });
+
+        trigger(requestBody).then(() => router.push("/"));
       }}
     >
       <label>
@@ -54,7 +59,9 @@ export function QuestionForm({
         Details
         <textarea name="details" defaultValue={initialValues?.details ?? undefined} />
       </label>
-      <Button type="submit">{type === "create" ? "Create" : "Update"} question</Button>
+      <Button type="submit" disabled={isMutating}>
+        {isMutating ? <Spinner /> : type === "create" ? "Create" : "Update"}
+      </Button>
     </Form>
   );
 }

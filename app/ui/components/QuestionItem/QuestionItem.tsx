@@ -1,6 +1,6 @@
 import { Text } from "../text/text";
 import { TagProps } from "../tag/tag";
-import DeleteButton from "@/app/ui/components/DeleteButton/DeleteButton";
+import { DeleteQuestionButton } from "@/app/ui/components/DeleteButton/DeleteButton";
 import EditButton from "@/app/ui/components/EditButton/EditButton";
 import ItemFlexWrapper from "../ItemFlexWrapper/ItemFlexWrapper";
 
@@ -27,7 +27,7 @@ export default function QuestionItem({ id, content, type, cost, details }: Quest
         {details && <Text type="description">{details}</Text>}
       </div>
       <EditButton href={`/questions/${id}`} />
-      <DeleteButton url={`/api/questions/${id}`} />
+      <DeleteQuestionButton id={id} />
     </ItemFlexWrapper>
   );
 }

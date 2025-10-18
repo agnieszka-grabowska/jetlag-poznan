@@ -1,27 +1,34 @@
 "use client";
 
 import styles from "./DeleteButton.module.css";
-import { fetcherDelete } from "@/app/helpers";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FaRegTrashCan } from "react-icons/fa6";
 import useSWRMutation from "swr/mutation";
 import Spinner from "../spinner/spinner";
-import { DeleteQuestionsResponse } from "@/app/api/questions/[id]/route";
+import { deleteQuestion } from "@/app/lib/questions";
+import { deleteCurse } from "@/app/lib/curses";
 
-interface DeleteButtonProps {
-  url: string;
+export function DeleteQuestionButton({ id }: { id: string }) {
+  const { trigger, isMutating } = useSWRMutation(id, deleteQuestion);
+  return <DeleteButton isDeleting={isMutating} onClick={trigger} />;
 }
 
-export default function DeleteButton({ url }: DeleteButtonProps) {
-  const { trigger, isMutating } = useSWRMutation<DeleteQuestionsResponse, any, any, any>(
-    url,
-    fetcherDelete
-  );
+export function DeleteCurseButton({ id }: { id: string }) {
+  const { trigger, isMutating } = useSWRMutation(id, deleteCurse);
+  return <DeleteButton isDeleting={isMutating} onClick={trigger} />;
+}
+
+interface DeleteButtonProps {
+  onClick: () => Promise<unknown>;
+  isDeleting: boolean;
+}
+
+function DeleteButton({ isDeleting, onClick }: DeleteButtonProps) {
   const router = useRouter();
 
   function handleDelete() {
-    trigger()
+    onClick()
       .then(() => router.refresh())
       .catch((reason) => {
         toast.error("Something went wrong!");
@@ -32,10 +39,10 @@ export default function DeleteButton({ url }: DeleteButtonProps) {
     <button
       aria-label="delete"
       onClick={handleDelete}
-      disabled={isMutating}
+      disabled={isDeleting}
       className={styles.deleteButton}
     >
-      {isMutating ? <Spinner /> : <FaRegTrashCan size={20} />}
+      {isDeleting ? <Spinner /> : <FaRegTrashCan size={20} />}
     </button>
   );
 }

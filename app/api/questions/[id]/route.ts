@@ -2,20 +2,14 @@ import { Question } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { QuestionRequest } from "../questions-types";
 
-export type PutQuestionsRequest = {
-  content: string;
-  details: string;
-  cost: number;
-  type: string;
-};
 type Params = Promise<{ id: string }>;
 export type PutQuestionsResponse = { question: Question };
 export async function PUT(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
   const { id } = await params;
-  const { content, details, cost, type } = (await request.json()) as PutQuestionsRequest;
+  const { content, details, cost, type } = (await request.json()) as QuestionRequest;
 
   const updatedQuestion = await db.question.update({
     where: {
