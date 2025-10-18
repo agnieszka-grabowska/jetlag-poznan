@@ -1,9 +1,7 @@
-import { motion } from "framer-motion";
 import React from "react";
 import styles from "../page.module.css";
 import { Text } from "@/app/ui/components/text/text";
 import FlexWithGap from "@/app/ui/components/FlexWithGap/FlexWithGap";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import useSWR from "swr";
 import { fetcher } from "@/app/helpers";
 import { GetCursesResponse } from "@/app/api/curses/route";

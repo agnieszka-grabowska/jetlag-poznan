@@ -8,36 +8,14 @@ import { Button } from "../../ui/components/button/button";
 import useSWRMutation from "swr/mutation";
 import CardError from "@/app/ui/components/card/CardError";
 import Spinner from "@/app/ui/components/spinner/spinner";
-
-async function register(url: string, { arg }: { arg: { username: string; password: string } }) {
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: arg.username,
-      password: arg.password,
-    }),
-  }).then(async (res) => {
-    if (res.ok) {
-      return res.json();
-    } else {
-      if (res.status.toString().startsWith("4")) {
-        const { error } = await res.json();
-        throw new Error(error);
-      } else {
-        throw new Error(res.statusText);
-      }
-    }
-  });
-}
+import { register } from "@/app/lib/register";
+import { RegisterRequest } from "@/app/api/register/route";
 
 export default function Page() {
   const router = useRouter();
-  const { trigger, isMutating, error } = useSWRMutation<any, Error, any, any>(
+  const { trigger, isMutating, error } = useSWRMutation(
     "/api/register",
-    register
+    (key, { arg }: { arg: RegisterRequest }) => register(arg)
   );
 
   return (

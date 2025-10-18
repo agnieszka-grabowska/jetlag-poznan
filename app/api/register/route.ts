@@ -3,15 +3,23 @@ import { hash } from "argon2";
 import { db } from "../db";
 import { createAuthCookie } from "@/app/api/auth";
 
+export type RegisterRequest = {
+  username: string;
+  password: string;
+};
+export type RegisterResponse = {
+  username: string;
+};
+
 export async function POST(request: Request) {
-  const { username, password } = await request.json();
+  const { username, password } = (await request.json()) as RegisterRequest;
   const passwordHash = await hash(password);
   if (await db.user.findFirst({ where: { username } })) {
     return NextResponse.json(
       {
         error: `User with username ${username} already exists`,
       },
-      { status: 400 },
+      { status: 400 }
     );
   }
   const { id } = await db.user.create({

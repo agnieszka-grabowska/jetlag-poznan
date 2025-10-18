@@ -14,18 +14,22 @@ export function formatTime(ms: number, options: { showHours: boolean } = { showH
   return `${formatedMinutes}:${formatedSeconds}`;
 }
 
-export async function fetcher(url: string) {
-  return fetch(url).then(async (res) => {
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
-    }
-  });
-}
+type Body = object | undefined;
 
-export async function fetcherPost<T>(url: string, options?: { arg: T }) {
-  return fetch(url, { method: "POST", body: JSON.stringify(options?.arg) }).then(async (res) => {
+export async function fetcher(
+  url: string,
+  options?: {
+    body: Body;
+    method?: "POST" | "GET" | "PUT" | "DELETE";
+  }
+) {
+  return fetch(url, {
+    method: options?.method ?? "GET",
+    body: JSON.stringify(options?.body),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(async (res) => {
     if (!res.ok) {
       const { error } = await res.json();
       if (error) {
@@ -33,32 +37,19 @@ export async function fetcherPost<T>(url: string, options?: { arg: T }) {
       }
       throw new Error(res.statusText);
     }
+
     return res.json();
   });
 }
 
-export async function fetcherDelete(url: string) {
-  return fetch(url, { method: "DELETE" }).then(async (res) => {
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
-    }
-  });
+export function fetcherPost(url: string, options?: { body: Body }) {
+  return fetcher(url, { body: options?.body, method: "POST" });
 }
 
-export async function fetcherPut<T>(url: string, options?: { arg: T }) {
-  return fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(options?.arg),
-  }).then(async (res) => {
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
-    }
-  });
+export function fetcherPut(url: string, options?: { body: Body }) {
+  return fetcher(url, { body: options?.body, method: "PUT" });
+}
+
+export function fetcherDelete(url: string, options?: { body: Body }) {
+  return fetcher(url, { body: options?.body, method: "DELETE" });
 }
