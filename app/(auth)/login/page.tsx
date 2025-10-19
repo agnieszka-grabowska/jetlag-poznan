@@ -10,14 +10,10 @@ import useSWRMutation from "swr/mutation";
 import CardError from "@/app/ui/components/card/CardError";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import { login } from "@/app/lib/login";
-import { LoginRequest } from "@/app/api/login/route";
 
 export default function Page() {
   const router = useRouter();
-  const { trigger, isMutating, error } = useSWRMutation(
-    "/api/login",
-    (key, { arg }: { arg: LoginRequest }) => login(arg)
-  );
+  const { trigger, isMutating, error } = useSWRMutation("/api/login", login);
 
   return (
     <Card title="Login">

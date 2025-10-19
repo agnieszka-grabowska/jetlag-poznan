@@ -14,18 +14,18 @@ export function formatTime(ms: number, options: { showHours: boolean } = { showH
   return `${formatedMinutes}:${formatedSeconds}`;
 }
 
-type Body = object | undefined;
+type Body = {};
 
 export async function fetcher(
   url: string,
   options?: {
-    body: Body;
+    arg?: Body;
     method?: "POST" | "GET" | "PUT" | "DELETE";
   }
 ) {
   return fetch(url, {
     method: options?.method ?? "GET",
-    body: JSON.stringify(options?.body),
+    body: JSON.stringify(options?.arg),
     headers: {
       "Content-Type": "application/json",
     },
@@ -42,14 +42,14 @@ export async function fetcher(
   });
 }
 
-export function fetcherPost(url: string, options?: { body: Body }) {
-  return fetcher(url, { body: options?.body, method: "POST" });
+export function fetcherPost(url: string, options?: { arg?: Body }) {
+  return fetcher(url, { arg: options?.arg, method: "POST" });
 }
 
-export function fetcherPut(url: string, options?: { body: Body }) {
-  return fetcher(url, { body: options?.body, method: "PUT" });
+export function fetcherPut(url: string, options?: { arg?: Body }) {
+  return fetcher(url, { arg: options?.arg, method: "PUT" });
 }
 
-export function fetcherDelete(url: string, options?: { body: Body }) {
-  return fetcher(url, { body: options?.body, method: "DELETE" });
+export function fetcherDelete(url: string, options?: { arg?: Body }) {
+  return fetcher(url, { arg: options?.arg, method: "DELETE" });
 }

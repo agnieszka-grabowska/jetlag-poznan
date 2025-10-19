@@ -9,14 +9,10 @@ import useSWRMutation from "swr/mutation";
 import CardError from "@/app/ui/components/card/CardError";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import { register } from "@/app/lib/register";
-import { RegisterRequest } from "@/app/api/register/route";
 
 export default function Page() {
   const router = useRouter();
-  const { trigger, isMutating, error } = useSWRMutation(
-    "/api/register",
-    (key, { arg }: { arg: RegisterRequest }) => register(arg)
-  );
+  const { trigger, isMutating, error } = useSWRMutation("/api/register", register);
 
   return (
     <Card title="Register">

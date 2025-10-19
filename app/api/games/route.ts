@@ -57,10 +57,8 @@ export type PostGamesRequest = {
   jailDuration: number;
   curse_costs: Array<number>;
 };
-export type PostGamesResponse = {
-  game: Game & {
-    rounds: Array<{ id: string }>;
-  };
+export type PostGamesResponse = Game & {
+  rounds: Array<{ id: string }>;
 };
 export async function POST(request: Request) {
   const userId = await validateSession();
@@ -182,7 +180,7 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json<PostGamesResponse>({ game });
+  return NextResponse.json<PostGamesResponse>(game);
 }
 
 function Error(message: string) {

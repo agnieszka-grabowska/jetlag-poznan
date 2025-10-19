@@ -2,19 +2,19 @@
 
 import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import React, { FormEvent, Reducer } from "react";
+import React, { FormEvent } from "react";
 import styles from "./page.module.css";
-import reducer, { GameAction, GameState } from "./reducer";
-import { PostGamesRequest, PostGamesResponse } from "@/app/api/games/route";
+import reducer, { GameState } from "./reducer";
+import { PostGamesRequest } from "@/app/api/games/route";
 import Form from "@/app/ui/components/Form/Form";
 import CardError from "@/app/ui/components/card/CardError";
 import useSWRMutation from "swr/mutation";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import QuestionsInput from "./components/QuestionsInput";
-import { fetcherPost } from "@/app/helpers";
 import InputWithAddButton from "./components/InputWithAddButton";
 import Teams from "./components/Teams";
 import CursesInput from "./components/CursesInput";
+import { createGame } from "@/app/lib/games";
 
 const INITIAL_SETTINGS: GameState = {
   teams: [],
@@ -33,10 +33,7 @@ export default function CreateGamePage() {
     setErrorMessage("");
   }, [game]);
 
-  const { trigger, isMutating, error } = useSWRMutation(
-    `/api/games`,
-    fetcherPost<PostGamesRequest>
-  );
+  const { trigger, isMutating, error } = useSWRMutation(`/api/games`, createGame);
 
   function toggleQuestion(questionId: string) {
     if (game.questionIds.includes(questionId)) {
@@ -118,7 +115,7 @@ export default function CreateGamePage() {
       curse_costs: game.cursesCosts,
     };
 
-    trigger(requestData).then(({ game }: PostGamesResponse) =>
+    trigger(requestData).then((game) =>
       router.push(`/game/${game.id}/rounds/${game.rounds[0].id}`)
     );
   }
