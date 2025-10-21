@@ -20,7 +20,7 @@ export async function fetcher(
   url: string,
   options?: {
     arg?: Body;
-    method?: "POST" | "GET" | "PUT" | "DELETE";
+    method?: "POST" | "GET" | "PUT" | "DELETE" | "PATCH";
   }
 ) {
   return fetch(url, {
@@ -31,10 +31,13 @@ export async function fetcher(
     },
   }).then(async (res) => {
     if (!res.ok) {
-      const { error } = await res.json();
-      if (error) {
-        throw new Error(error);
+      if (String(res.status)[0] === "4") {
+        const { error } = await res.json();
+        if (error) {
+          throw new Error(error);
+        }
       }
+
       throw new Error(res.statusText);
     }
 
@@ -52,4 +55,8 @@ export function fetcherPut(url: string, options?: { arg?: Body }) {
 
 export function fetcherDelete(url: string, options?: { arg?: Body }) {
   return fetcher(url, { arg: options?.arg, method: "DELETE" });
+}
+
+export function fetcherPatch(url: string, options?: { arg?: Body }) {
+  return fetcher(url, { arg: options?.arg, method: "PATCH" });
 }
