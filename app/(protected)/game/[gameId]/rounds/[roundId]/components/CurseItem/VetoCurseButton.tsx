@@ -2,30 +2,25 @@
 
 import { useParams } from "next/navigation";
 import styles from "./CurseItem.module.css";
-import { fetcherPost } from "@/app/helpers";
-import { useSWRConfig } from "swr";
-import useSWRMutation from "swr/mutation";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import Center from "@/app/ui/components/Center/Center";
+import { useVetoCurse } from "@/app/services/mutations";
 
-export default function VetoCurseButton({
-  curseId,
-  createdAt,
-}: {
+interface VetoCurseButtonProps {
   curseId: string;
   createdAt: Date;
-}) {
-  const { mutate } = useSWRConfig();
-  const params = useParams();
+}
 
-  const { trigger, isMutating } = useSWRMutation(
-    `/api/curses/${curseId}/${createdAt}/veto`,
-    fetcherPost
-  );
+export default function VetoCurseButton({ curseId, createdAt }: VetoCurseButtonProps) {
+  const params: { gameId: string; roundId: string } = useParams();
 
-  async function vetoCurse() {
-    trigger().then(() => mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`));
-  }
+  const { trigger, isMutating } = useVetoCurse({
+    ...params,
+    createdAt: String(createdAt),
+    curseId,
+  });
+
+  const vetoCurse = () => trigger();
 
   return (
     <button className={styles.vetoCurseButton} onClick={vetoCurse} disabled={isMutating}>

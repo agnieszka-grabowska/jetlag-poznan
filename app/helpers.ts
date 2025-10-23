@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export function formatTime(ms: number, options: { showHours: boolean } = { showHours: false }) {
   const ss = Math.floor(ms / 1000) % 60;
   const mm = Math.floor(ms / 1000 / 60) % 60;
@@ -14,49 +16,10 @@ export function formatTime(ms: number, options: { showHours: boolean } = { showH
   return `${formatedMinutes}:${formatedSeconds}`;
 }
 
-type Body = {};
-
-export async function fetcher(
-  url: string,
-  options?: {
-    arg?: Body;
-    method?: "POST" | "GET" | "PUT" | "DELETE" | "PATCH";
+export const showToast = (error: any) => {
+  if (error instanceof Error) {
+    toast.error(error.message);
+  } else if (error) {
+    toast.error("Something went wrong!");
   }
-) {
-  return fetch(url, {
-    method: options?.method ?? "GET",
-    body: JSON.stringify(options?.arg),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then(async (res) => {
-    if (!res.ok) {
-      if (String(res.status)[0] === "4") {
-        const { error } = await res.json();
-        if (error) {
-          throw new Error(error);
-        }
-      }
-
-      throw new Error(res.statusText);
-    }
-
-    return res.json();
-  });
-}
-
-export function fetcherPost(url: string, options?: { arg?: Body }) {
-  return fetcher(url, { arg: options?.arg, method: "POST" });
-}
-
-export function fetcherPut(url: string, options?: { arg?: Body }) {
-  return fetcher(url, { arg: options?.arg, method: "PUT" });
-}
-
-export function fetcherDelete(url: string, options?: { arg?: Body }) {
-  return fetcher(url, { arg: options?.arg, method: "DELETE" });
-}
-
-export function fetcherPatch(url: string, options?: { arg?: Body }) {
-  return fetcher(url, { arg: options?.arg, method: "PATCH" });
-}
+};

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/app/api/db";
 import { validateSession } from "@/app/api/auth";
 import { Question, TeamRoundQuestion } from "@prisma/client";
-import { uploadFile } from "@uploadcare/upload-client";
 
 export type AnswerQuestionRequest = {
   answer?: string;
@@ -14,13 +13,15 @@ export type AnswerQuestionResponse = {
 };
 
 type Params = Promise<{
+  gameId: string;
+  roundId: string;
   questionId: string;
   teamId: string;
 }>;
 
 export async function POST(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
-  const { questionId, teamId } = await params;
+  const { gameId, roundId, questionId, teamId } = await params;
 
   const { answer, photoUrl } = (await request.json()) as AnswerQuestionRequest;
 
@@ -36,6 +37,8 @@ export async function POST(request: Request, { params }: { params: Params }) {
         },
       },
       round: {
+        gameId,
+        id: roundId,
         end_time: null,
       },
     },
@@ -55,7 +58,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
       teamId_questionId_roundId: {
         questionId,
         teamId,
-        roundId: lastRound.roundId,
+        roundId,
       },
     },
     data: {

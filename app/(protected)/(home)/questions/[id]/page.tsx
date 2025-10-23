@@ -1,4 +1,4 @@
-import { QuestionForm } from "@/app/(protected)/(home)/questions/QuestionForm";
+import { EditQuestionForm } from "@/app/(protected)/(home)/questions/QuestionForm";
 import { db } from "@/app/api/db";
 import { validateSession } from "@/app/api/auth";
 import Card from "@/app/ui/components/card/card";
@@ -18,7 +18,7 @@ export default async function Page({ params }: { params: Params }) {
   console.log("initial", initialValues);
   return (
     <Card title="Edit question">
-      <QuestionForm type="edit" initialValues={initialValues} id={id} />
+      <EditQuestionForm initialValues={initialValues} id={id} />
     </Card>
   );
 }

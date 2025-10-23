@@ -1,18 +1,13 @@
 "use client";
 
-import { fetcherDelete } from "@/app/helpers";
 import Spinner from "@/app/ui/components/spinner/spinner";
-import { useParams, useRouter } from "next/navigation";
-import useSWRMutation from "swr/mutation";
+import { useRouter } from "next/navigation";
 import styles from "./RemoveRoundButton.module.css";
+import { useDeleteRound } from "@/app/services/mutations";
 
 export default function RemoveRoundButton() {
-  const params: { gameId: string; roundId: string } = useParams();
   const router = useRouter();
-  const { trigger, isMutating } = useSWRMutation(
-    `/api/games/${params.gameId}/rounds/${params.roundId}`,
-    fetcherDelete
-  );
+  const { trigger, isMutating } = useDeleteRound();
 
   async function removeRound() {
     trigger().then(() => router.push(`/`));

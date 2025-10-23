@@ -3,32 +3,36 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/app/ui/components/button/button";
 import Form from "@/app/ui/components/Form/Form";
 import { JSX } from "react";
-import useSWRMutation from "swr/mutation";
-import { createQuestion, editQuestion } from "@/app/lib/questions";
-import { QuestionRequest } from "@/app/api/questions/questions-types";
+import { QuestionRequest, QuestionResponse } from "@/app/api/questions/questions-types";
 import Spinner from "@/app/ui/components/spinner/spinner";
+import { useCreateQuestion, useEditQuestion } from "@/app/services/mutations";
 
-interface CreateQuestion {
-  type: "create";
-  id?: never;
-  initialValues?: never;
-}
-
-interface EditQuestion {
-  type: "edit";
+interface EditQuestionFormProps {
   id: string;
   initialValues: QuestionRequest;
 }
 
-type QuestionFormProps = EditQuestion | CreateQuestion;
+export function EditQuestionForm({ id, initialValues }: EditQuestionFormProps) {
+  const { trigger, isMutating } = useEditQuestion(id);
 
-export function QuestionForm({ type, id, initialValues }: QuestionFormProps): JSX.Element {
-  const fetcher = (_: string, { arg }: { arg: QuestionRequest }) => {
-    return type === "create" ? createQuestion(arg) : editQuestion(id, arg);
-  };
-  const { trigger, isMutating } = useSWRMutation("questions", fetcher);
+  return <QuestionForm onSubmit={trigger} isMutating={isMutating} initialValues={initialValues} />;
+}
 
+export function CreateQuestionForm() {
+  const { trigger, isMutating } = useCreateQuestion();
+
+  return <QuestionForm onSubmit={trigger} isMutating={isMutating} />;
+}
+
+interface QuestionFormProps {
+  onSubmit: (arg: QuestionRequest) => Promise<QuestionResponse>;
+  isMutating: boolean;
+  initialValues?: QuestionRequest;
+}
+
+function QuestionForm({ onSubmit, isMutating, initialValues }: QuestionFormProps): JSX.Element {
   const router = useRouter();
+
   return (
     <Form
       onSubmit={(e) => {
@@ -40,7 +44,7 @@ export function QuestionForm({ type, id, initialValues }: QuestionFormProps): JS
           details: e.currentTarget.details.value,
         };
 
-        trigger(requestBody).then(() => router.push("/"));
+        onSubmit(requestBody).then(() => router.push("/"));
       }}
     >
       <label>
@@ -60,7 +64,7 @@ export function QuestionForm({ type, id, initialValues }: QuestionFormProps): JS
         <textarea name="details" defaultValue={initialValues?.details ?? undefined} />
       </label>
       <Button type="submit" disabled={isMutating}>
-        {isMutating ? <Spinner /> : type === "create" ? "Create" : "Update"}
+        {isMutating ? <Spinner /> : initialValues ? "Update" : "Create"}
       </Button>
     </Form>
   );

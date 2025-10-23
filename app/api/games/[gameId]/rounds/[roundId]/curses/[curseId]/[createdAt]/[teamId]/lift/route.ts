@@ -7,15 +7,21 @@ export type LiftCurseResponse = {
   curse: TeamRoundCurse;
 };
 
-type Params = Promise<{ curseId: string; createdAt: string; targetTeamId: string }>;
+type Params = Promise<{
+  gameId: string;
+  roundId: string;
+  curseId: string;
+  createdAt: string;
+  teamId: string;
+}>;
 
 export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
 
-  const { curseId, createdAt, targetTeamId } = await params;
+  const { gameId, roundId, curseId, createdAt, teamId } = await params;
 
   // Throw if the user is not in the target team or not a hider
-  const lastRound = await db.teamRound.findFirstOrThrow({
+  await db.teamRound.findFirstOrThrow({
     where: {
       role: "HIDER",
       team: {
@@ -25,8 +31,10 @@ export async function POST(_request: Request, { params }: { params: Params }) {
           },
         },
       },
+      roundId,
       round: {
         end_time: null,
+        gameId,
       },
     },
   });
@@ -34,9 +42,9 @@ export async function POST(_request: Request, { params }: { params: Params }) {
   const curse = await db.teamRoundCurse.update({
     where: {
       roundId_curseId_teamId_created_at: {
-        curseId: curseId,
-        teamId: targetTeamId,
-        roundId: lastRound.roundId,
+        curseId,
+        teamId,
+        roundId,
         created_at: createdAt,
       },
     },
@@ -48,7 +56,7 @@ export async function POST(_request: Request, { params }: { params: Params }) {
   if (!curse) {
     return NextResponse.json(
       {
-        error: `No curse with id ${curseId} on team ${lastRound.teamId} found for active round`,
+        error: `No curse with id ${curseId} on team ${teamId} found for active round`,
       },
       { status: 400 }
     );

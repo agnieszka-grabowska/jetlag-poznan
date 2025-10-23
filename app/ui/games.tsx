@@ -1,16 +1,29 @@
-import { GetGamesResponse } from "@/app/api/games/route";
+"use client";
+
 import Link from "next/link";
-import { serverFetch } from "../server-fetch";
 import { Text } from "./components/text/text";
+import { useGames } from "../services/queries";
+import Center from "./components/Center/Center";
+import Spinner from "./components/spinner/spinner";
 
-export default async function Games() {
-  const response = await serverFetch("/api/games");
+export default function Games() {
+  const { data, error, isLoading } = useGames();
 
-  if (!response.ok) {
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (error) {
     return <p>Error when fetching games</p>;
   }
 
-  const data: GetGamesResponse = await response.json();
+  if (!data) {
+    return <p>No data</p>;
+  }
 
   return (
     <>

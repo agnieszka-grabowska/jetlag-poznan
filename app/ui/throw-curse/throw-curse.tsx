@@ -1,15 +1,11 @@
 "use client";
 
-import { fetcherPost } from "@/app/helpers";
 import React from "react";
 import styles from "./throw-curse.module.css";
-import { useParams } from "next/navigation";
 import { Button } from "../components/button/button";
-import { ThrowCurseResponse } from "@/app/api/curses/throw/[targetTeamId]/[difficulty]/route";
 import { useGameContext } from "@/app/(protected)/game/[gameId]/rounds/[roundId]/components/GameProvider";
-import useSWRMutation from "swr/mutation";
 import Spinner from "../components/spinner/spinner";
-import { useSWRConfig } from "swr";
+import { useThrowCurse } from "@/app/services/mutations";
 
 export default function ThrowCurse({
   teamId,
@@ -22,13 +18,8 @@ export default function ThrowCurse({
 }) {
   const [difficulty, setDifficulty] = React.useState<number>(1);
   const { game } = useGameContext();
-  const { mutate } = useSWRConfig();
-  const params = useParams();
 
-  const { trigger, isMutating } = useSWRMutation<ThrowCurseResponse, Error, any, any>(
-    `/api/curses/throw/${teamId}/${difficulty}`,
-    fetcherPost
-  );
+  const { trigger, isMutating } = useThrowCurse({ difficulty, teamId });
 
   return (
     <>
@@ -41,9 +32,7 @@ export default function ThrowCurse({
               return;
             }
 
-            trigger().then(() => {
-              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
-            });
+            trigger();
           }}
         >
           <select value={difficulty} onChange={(e) => setDifficulty(parseInt(e.target.value))}>

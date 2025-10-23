@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 import { comfortaa } from "@/app/fonts";
 import { Toaster } from "react-hot-toast";
+import SWRConfigProvider from "./SWRConfigProvider";
 
 export const metadata: Metadata = {
   title: "Jet Lag Poznań – Hide & Seek Game Assistant",
@@ -17,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={comfortaa.className}>
-        {children}
+        <SWRConfigProvider>{children}</SWRConfigProvider>
         <Toaster />
       </body>
     </html>

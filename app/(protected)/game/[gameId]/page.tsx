@@ -1,5 +1,4 @@
 import { GetRoundsResponse } from "@/app/api/games/[gameId]/rounds/route";
-import { GetGamesResponse } from "@/app/api/games/route";
 import { serverFetch } from "@/app/server-fetch";
 import { redirect } from "next/navigation";
 

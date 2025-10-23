@@ -4,17 +4,14 @@ import { useParams } from "next/navigation";
 import React from "react";
 import styles from "./QuestionItem.module.css";
 import useCountdown from "@/app/hooks/use-countdown";
-import useSWRMutation from "swr/mutation";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import { sendNotification } from "@/app/utils/actions";
 import { useGameContext } from "../GameProvider";
 import { useRoundContext } from "../RoundProvider";
-import { useSWRConfig } from "swr";
 import Center from "@/app/ui/components/Center/Center";
 import toast from "react-hot-toast";
-import { AnswerQuestionRequest } from "@/app/api/questions/answer/[teamId]/[questionId]/route";
-import { fetcherPost } from "@/app/helpers";
 import { uploadPhoto } from "./uploadPhoto";
+import { useAnswerQuestion } from "@/app/services/mutations";
 
 export default function AnswerForm({
   askedAt,
@@ -46,12 +43,8 @@ export default function AnswerForm({
 }
 
 function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: string }) {
-  const { mutate } = useSWRConfig();
-  const params = useParams();
-  const { trigger, isMutating, error } = useSWRMutation<any, Error, any, AnswerQuestionRequest>(
-    `/api/questions/answer/${ownerTeamId}/${questionId}`,
-    fetcherPost
-  );
+  const params: { gameId: string; roundId: string } = useParams();
+  const { trigger, isMutating } = useAnswerQuestion({ ownerTeamId, questionId });
 
   const [photoIsUploading, setPhotoIsUploading] = React.useState(false);
 
@@ -90,15 +83,8 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
         targetUsersIds: ownerTeamMembersIds!,
         url: `/game/${params.gameId}/rounds/${params.roundId}/questions`,
       });
-      mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
     });
   }
-
-  React.useEffect(() => {
-    if (error) {
-      toast.error(error?.message ?? "Something went wrong.");
-    }
-  }, [error]);
 
   return (
     <form onSubmit={submitAnswer}>
@@ -127,7 +113,6 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
                 targetUsersIds: ownerTeamMembersIds!,
                 url: `/game/${params.gameId}/rounds/${params.roundId}/questions`,
               });
-              mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
             });
           }}
           disabled={isMutating || photoIsUploading}

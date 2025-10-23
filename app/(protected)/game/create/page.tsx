@@ -8,13 +8,12 @@ import reducer, { GameState } from "./reducer";
 import { PostGamesRequest } from "@/app/api/games/route";
 import Form from "@/app/ui/components/Form/Form";
 import CardError from "@/app/ui/components/card/CardError";
-import useSWRMutation from "swr/mutation";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import QuestionsInput from "./components/QuestionsInput";
 import InputWithAddButton from "./components/InputWithAddButton";
 import Teams from "./components/Teams";
 import CursesInput from "./components/CursesInput";
-import { createGame } from "@/app/lib/games";
+import { useCreateGame } from "@/app/services/mutations";
 
 const INITIAL_SETTINGS: GameState = {
   teams: [],
@@ -33,7 +32,7 @@ export default function CreateGamePage() {
     setErrorMessage("");
   }, [game]);
 
-  const { trigger, isMutating, error } = useSWRMutation(`/api/games`, createGame);
+  const { trigger, isMutating, error } = useCreateGame();
 
   function toggleQuestion(questionId: string) {
     if (game.questionIds.includes(questionId)) {

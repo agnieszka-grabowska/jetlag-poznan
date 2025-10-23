@@ -2,10 +2,9 @@ import React from "react";
 import styles from "../page.module.css";
 import { Text } from "@/app/ui/components/text/text";
 import FlexWithGap from "@/app/ui/components/FlexWithGap/FlexWithGap";
-import useSWR from "swr";
-import { fetcher } from "@/app/helpers";
 import { GetCursesResponse } from "@/app/api/curses/route";
 import ListItemPlaceholder from "@/app/ui/components/ListItemPlaceholder/ListItemPlaceholder";
+import { useCurses } from "@/app/services/queries";
 
 export default function CursesInput({
   curses,
@@ -16,17 +15,17 @@ export default function CursesInput({
   changeCurseDifficulty: (id: string, difficulty: number) => void;
   initializeCurses: (curses: { id: string; difficulty: number }[]) => void;
 }) {
-  const { data, error, isLoading } = useSWR<GetCursesResponse>("/api/curses", fetcher, {
-    onSuccess: (data) => {
-      if (curses.length === 0) {
-        initializeCurses(
-          data.curses.map((curse) => {
-            return { id: curse.id, difficulty: Math.min(curse.defaultDifficulty ?? 1, 3) };
-          })
-        );
-      }
-    },
-  });
+  const onSuccess = (data: GetCursesResponse) => {
+    if (curses.length === 0) {
+      initializeCurses(
+        data.curses.map((curse) => {
+          return { id: curse.id, difficulty: Math.min(curse.defaultDifficulty ?? 1, 3) };
+        })
+      );
+    }
+  };
+
+  const { data, error, isLoading } = useCurses(onSuccess);
 
   if (error) {
     return <div>Error loading questions</div>;

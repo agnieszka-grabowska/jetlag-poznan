@@ -1,14 +1,13 @@
 "use client";
 
 import { GetQuestionsResponse } from "@/app/api/questions/route";
-import { fetcher } from "@/app/helpers";
-import useSWR from "swr";
 import styles from "../page.module.css";
 import FlexWithGap from "@/app/ui/components/FlexWithGap/FlexWithGap";
 import { Text } from "@/app/ui/components/text/text";
 import React from "react";
 import { Question } from "@prisma/client";
 import ListItemPlaceholder from "@/app/ui/components/ListItemPlaceholder/ListItemPlaceholder";
+import { useQuestions } from "@/app/services/queries";
 
 export default function QuestionsInput({
   questionIds,
@@ -19,14 +18,14 @@ export default function QuestionsInput({
   toggleQuestion: (questionId: string) => void;
   initializeQuestions: (questionIds: string[]) => void;
 }) {
-  const { data, error, isLoading } = useSWR<GetQuestionsResponse>("/api/questions", fetcher, {
-    onSuccess: (data) => {
-      if (!questions) {
-        initializeQuestions(data.questions.map((question) => question.id));
-        setQuestions(data.questions);
-      }
-    },
-  });
+  const onSuccess = (data: GetQuestionsResponse) => {
+    if (!questions) {
+      initializeQuestions(data.questions.map((question) => question.id));
+      setQuestions(data.questions);
+    }
+  };
+
+  const { error, isLoading } = useQuestions(onSuccess);
 
   const [questions, setQuestions] = React.useState<Question[] | null>(null);
 

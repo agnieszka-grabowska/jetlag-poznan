@@ -1,11 +1,10 @@
-import { Question } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 import { NextResponse } from "next/server";
-import { QuestionRequest } from "../questions-types";
+import { QuestionRequest, QuestionResponse } from "../questions-types";
 
 type Params = Promise<{ id: string }>;
-export type PutQuestionsResponse = { question: Question };
+
 export async function PUT(request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
   const { id } = await params;
@@ -24,10 +23,9 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     },
   });
 
-  return NextResponse.json<PutQuestionsResponse>({ question: updatedQuestion });
+  return NextResponse.json<QuestionResponse>({ question: updatedQuestion });
 }
 
-export type DeleteQuestionsResponse = { question: Question };
 export async function DELETE(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
   const { id } = await params;
@@ -39,7 +37,7 @@ export async function DELETE(_request: Request, { params }: { params: Params }) 
     },
   });
 
-  return NextResponse.json<DeleteQuestionsResponse>({
+  return NextResponse.json<QuestionResponse>({
     question: deletedQuestion,
   });
 }

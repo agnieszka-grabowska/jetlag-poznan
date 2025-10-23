@@ -7,12 +7,12 @@ export type VetoCurseResponse = {
   curse: TeamRoundCurse;
 };
 
-type Params = Promise<{ curseId: string; createdAt: string }>;
+type Params = Promise<{ gameId: string; roundId: string; curseId: string; createdAt: string }>;
 
 export async function POST(_request: Request, { params }: { params: Params }) {
   const userId = await validateSession();
 
-  const { curseId, createdAt } = await params;
+  const { curseId, createdAt, gameId, roundId } = await params;
 
   // Throw if the user is not in the target team or not a hider
   const lastRound = await db.teamRound.findFirstOrThrow({
@@ -25,7 +25,9 @@ export async function POST(_request: Request, { params }: { params: Params }) {
           },
         },
       },
+      roundId,
       round: {
+        gameId,
         end_time: null,
       },
     },
@@ -36,7 +38,7 @@ export async function POST(_request: Request, { params }: { params: Params }) {
       roundId_curseId_teamId_created_at: {
         curseId,
         teamId: lastRound.teamId,
-        roundId: lastRound.roundId,
+        roundId,
         created_at: createdAt,
       },
     },

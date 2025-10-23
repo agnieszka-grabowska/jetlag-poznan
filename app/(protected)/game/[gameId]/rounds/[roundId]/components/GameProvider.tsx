@@ -1,13 +1,12 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import useSWR from "swr";
 import { GetGameResponse } from "@/app/api/games/[gameId]/route";
 import { useParams } from "next/navigation";
-import { fetcher } from "@/app/helpers";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import Center from "@/app/ui/components/Center/Center";
 import GridSkeleton from "./GridSkeleton";
+import { useGame } from "@/app/services/queries";
 
 const GameContext = React.createContext<GetGameResponse | null>(null);
 
@@ -24,10 +23,7 @@ export function useGameContext() {
 export default function GameProvider({ children }: { children: ReactNode }) {
   const params: { gameId: string; roundId: string } = useParams();
 
-  const { data, isLoading, error } = useSWR<GetGameResponse, any, any, any>(
-    `/api/games/${params.gameId}`,
-    fetcher
-  );
+  const { data, isLoading, error } = useGame(params.gameId);
 
   if (error) {
     return (

@@ -6,14 +6,13 @@ import Card from "../../ui/components/card/card";
 import Form from "../../ui/components/Form/Form";
 import { Button } from "../../ui/components/button/button";
 import React from "react";
-import useSWRMutation from "swr/mutation";
 import CardError from "@/app/ui/components/card/CardError";
 import Spinner from "@/app/ui/components/spinner/spinner";
-import { login } from "@/app/lib/login";
+import { useLogin } from "@/app/services/mutations";
 
 export default function Page() {
   const router = useRouter();
-  const { trigger, isMutating, error } = useSWRMutation("/api/login", login);
+  const { trigger, isMutating, error } = useLogin();
 
   return (
     <Card title="Login">

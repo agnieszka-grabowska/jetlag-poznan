@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 import { Question } from "@prisma/client";
-import { QuestionRequest } from "./questions-types";
+import { QuestionRequest, QuestionResponse } from "./questions-types";
 
 export type GetQuestionsResponse = { questions: Array<Question> };
 
@@ -17,7 +17,6 @@ export async function GET() {
   return NextResponse.json<GetQuestionsResponse>({ questions });
 }
 
-export type PostQuestionsResponse = { question: Question };
 export async function POST(request: Request) {
   const userId = await validateSession();
   const { content, details, cost, type } = (await request.json()) as QuestionRequest;
@@ -32,5 +31,5 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json<PostQuestionsResponse>({ question: newQuestion });
+  return NextResponse.json<QuestionResponse>({ question: newQuestion });
 }

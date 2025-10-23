@@ -1,29 +1,18 @@
 "use client";
 
 import { GetRoundResponse } from "@/app/api/games/[gameId]/rounds/[roundId]/route";
-import { fetcher } from "@/app/helpers";
 import Center from "@/app/ui/components/Center/Center";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import { useParams } from "next/navigation";
 import React, { ReactNode } from "react";
-import useSWR from "swr";
 import GridSkeleton from "./GridSkeleton";
+import { useRound } from "@/app/services/queries";
 
 const RoundContext = React.createContext<GetRoundResponse | null>(null);
 
 export default function RoundProvider({ children }: { children: ReactNode }) {
   const params: { gameId: string; roundId: string } = useParams();
-
-  const { data, isLoading, error } = useSWR<GetRoundResponse, any, any, any>(
-    `/api/games/${params.gameId}/rounds/${params.roundId}`,
-    fetcher,
-    {
-      refreshInterval: (latestData: GetRoundResponse) => {
-        if (latestData?.round.winner_id) return 0;
-        return 3000;
-      },
-    }
-  );
+  const { data, isLoading, error } = useRound(params);
 
   if (error) {
     return (

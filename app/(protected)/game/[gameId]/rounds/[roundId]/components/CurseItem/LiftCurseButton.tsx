@@ -2,11 +2,9 @@
 
 import { useParams } from "next/navigation";
 import styles from "./CurseItem.module.css";
-import { fetcherPost } from "@/app/helpers";
-import useSWRMutation from "swr/mutation";
 import Spinner from "@/app/ui/components/spinner/spinner";
-import { useSWRConfig } from "swr";
 import Center from "@/app/ui/components/Center/Center";
+import { useLiftCurse } from "@/app/services/mutations";
 
 export default function LiftCurseButton({
   curseId,
@@ -17,16 +15,17 @@ export default function LiftCurseButton({
   teamId: string;
   createdAt: Date;
 }) {
-  const { mutate } = useSWRConfig();
-  const params = useParams();
+  const params: { gameId: string; roundId: string } = useParams();
 
-  const { trigger, isMutating } = useSWRMutation(
-    `/api/curses/${curseId}/${createdAt}/${teamId}/lift`,
-    fetcherPost
-  );
+  const { trigger, isMutating } = useLiftCurse({
+    ...params,
+    curseId,
+    teamId,
+    createdAt: String(createdAt),
+  });
 
   function liftCurse() {
-    trigger().then(() => mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`));
+    trigger();
   }
 
   return (

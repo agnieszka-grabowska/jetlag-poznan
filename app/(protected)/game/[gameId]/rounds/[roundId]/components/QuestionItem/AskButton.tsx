@@ -4,12 +4,9 @@ import useCountdown from "@/app/hooks/use-countdown";
 import { useRoundContext } from "../RoundProvider";
 import { useGameContext } from "../GameProvider";
 import useUserTeam from "@/app/hooks/use_user_team";
-import useSWRMutation from "swr/mutation";
-import { fetcherPost } from "@/app/helpers";
-import { useParams } from "next/navigation";
-import { useSWRConfig } from "swr";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import Center from "@/app/ui/components/Center/Center";
+import { useAskQuestion } from "@/app/services/mutations";
 
 export default function AskButton({ questionId }: { questionId: string }) {
   const { userTeam } = useUserTeam();
@@ -25,10 +22,8 @@ export default function AskButton({ questionId }: { questionId: string }) {
 function Button({ questionId }: { questionId: string }) {
   const { game } = useGameContext();
   const { round } = useRoundContext();
-  const params = useParams();
 
-  const { trigger, isMutating } = useSWRMutation(`/api/questions/ask/${questionId}`, fetcherPost);
-  const { mutate } = useSWRConfig();
+  const { trigger, isMutating } = useAskQuestion(questionId);
 
   const jailTimeLeft = useCountdown({
     period: game.jail_duration,
@@ -36,14 +31,7 @@ function Button({ questionId }: { questionId: string }) {
   });
 
   return (
-    <button
-      onClick={() => {
-        trigger().then(() => {
-          mutate(`/api/games/${params.gameId}/rounds/${params.roundId}`);
-        });
-      }}
-      disabled={(jailTimeLeft ?? 1) > 0 || isMutating}
-    >
+    <button onClick={() => trigger()} disabled={(jailTimeLeft ?? 1) > 0 || isMutating}>
       <Center>{isMutating ? <Spinner /> : "Ask"} </Center>
     </button>
   );
