@@ -11,12 +11,6 @@ export async function fetcherFinal(
     method?: "POST" | "GET" | "PUT" | "DELETE" | "PATCH";
   }
 ) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-  if (!API_URL) {
-    throw new Error("Environment variable NEXT_PUBLIC_API_URL is not defined.");
-  }
-
   return fetch(`${API_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",

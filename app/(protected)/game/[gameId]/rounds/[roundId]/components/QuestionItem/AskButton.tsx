@@ -31,7 +31,7 @@ function Button({ questionId }: { questionId: string }) {
   });
 
   return (
-    <button onClick={() => trigger()} disabled={(jailTimeLeft ?? 1) > 0 || isMutating}>
+    <button onClick={() => trigger()} disabled={jailTimeLeft > 0 || isMutating}>
       <Center>{isMutating ? <Spinner /> : "Ask"} </Center>
     </button>
   );

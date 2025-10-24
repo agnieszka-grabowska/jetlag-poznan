@@ -21,7 +21,7 @@ export default function TimeLeftToAnswer({ askedAt }: { askedAt: Date }) {
 
   return (
     <p className={styles.timeToAnswer}>
-      Time left to answer: {!timeLeftToAnswer ? "--:--" : formatTime(Math.max(timeLeftToAnswer, 0))}
+      Time left to answer: {formatTime(Math.max(timeLeftToAnswer, 0))}
     </p>
   );
 }

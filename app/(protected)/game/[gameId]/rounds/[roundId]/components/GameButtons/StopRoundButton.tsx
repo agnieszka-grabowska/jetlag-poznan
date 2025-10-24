@@ -25,19 +25,14 @@ export default function StopRoundButton() {
 
   let buttonText;
 
-  if (jailTimeLeft === null) {
-    buttonText = `Jail period: ...`;
-  } else if (jailTimeLeft > 0) {
+  if (jailTimeLeft > 0) {
     buttonText = `Jail period: ${formatTime(jailTimeLeft)}`;
   } else {
     buttonText = "Stop Game";
   }
 
   return (
-    <GameButton
-      disabled={jailTimeLeft === null || jailTimeLeft > 0 || isMutating}
-      onClick={stopGame}
-    >
+    <GameButton disabled={jailTimeLeft > 0 || isMutating} onClick={stopGame}>
       {isMutating ? <Spinner /> : buttonText}
     </GameButton>
   );

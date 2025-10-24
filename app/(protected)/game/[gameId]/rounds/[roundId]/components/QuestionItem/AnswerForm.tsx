@@ -33,13 +33,9 @@ export default function AnswerForm({
     return;
   }
 
-  return (
-    <>
-      {(timeLeftToAnswer ?? 0) > 0 && (
-        <Form questionId={questionId} ownerTeamId={ownerTeamId ?? ""} />
-      )}
-    </>
-  );
+  if (timeLeftToAnswer > 0) {
+    return <Form questionId={questionId} ownerTeamId={ownerTeamId ?? ""} />;
+  }
 }
 
 function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: string }) {

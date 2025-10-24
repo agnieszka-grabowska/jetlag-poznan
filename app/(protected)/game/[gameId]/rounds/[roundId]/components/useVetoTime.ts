@@ -36,5 +36,5 @@ export default function useVetoCountdown(teamId: string): number {
     startTime: new Date(),
   });
 
-  return vetoPeriod || 0;
+  return vetoPeriod;
 }
