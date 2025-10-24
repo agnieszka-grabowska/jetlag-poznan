@@ -28,16 +28,6 @@ type SetRoleAction = {
   role: Role;
 };
 
-type RemoveQuestionAction = {
-  type: "question_removed";
-  questionId: string;
-};
-
-type AddQuestionAction = {
-  type: "question_added";
-  questionId: string;
-};
-
 type InitializeCursesAction = {
   type: "curses_initialized";
   curses: { id: string; difficulty: number }[];
@@ -47,11 +37,6 @@ type ChangeDifficultyAction = {
   type: "curse_difficulty_changed";
   curseId: string;
   difficulty: number;
-};
-
-type AddAllQuestionsAction = {
-  type: "all_questions_added";
-  questionIds: string[];
 };
 
 type UpdateCurseCostAction = {
@@ -66,16 +51,12 @@ export type GameAction =
   | AddMemberAction
   | RemoveMemberAction
   | SetRoleAction
-  | AddQuestionAction
-  | RemoveQuestionAction
   | InitializeCursesAction
   | ChangeDifficultyAction
-  | AddAllQuestionsAction
   | UpdateCurseCostAction;
 
 export interface GameState {
   teams: Team[];
-  questionIds: string[];
   curses: { id: string; difficulty: number }[];
   cursesCosts: number[];
 }
@@ -134,19 +115,6 @@ export default function reducer(game: GameState, action: GameAction) {
         return team;
       });
       return { ...game, teams: nextTeams };
-    }
-    case "all_questions_added": {
-      return { ...game, questionIds: action.questionIds };
-    }
-    case "question_added": {
-      return { ...game, questionIds: [...game.questionIds, action.questionId] };
-    }
-    case "question_removed": {
-      const nextQuestionIds = [...game.questionIds].filter(
-        (questionId) => questionId !== action.questionId
-      );
-
-      return { ...game, questionIds: nextQuestionIds };
     }
     case "curses_initialized": {
       return { ...game, curses: action.curses };

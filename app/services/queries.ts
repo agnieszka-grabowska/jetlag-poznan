@@ -51,6 +51,6 @@ export function useCurses(onSuccess: (data: GetCursesResponse) => void) {
   return useSWR<GetCursesResponse>("/api/curses", fetcher, { onSuccess });
 }
 
-export function useQuestions(onSuccess: (data: GetQuestionsResponse) => void) {
-  return useSWR<GetQuestionsResponse>("/api/curses", fetcher, { onSuccess });
+export function useQuestions() {
+  return useSWR<GetQuestionsResponse>("/api/questions");
 }
