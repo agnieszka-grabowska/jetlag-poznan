@@ -28,37 +28,15 @@ type SetRoleAction = {
   role: Role;
 };
 
-type InitializeCursesAction = {
-  type: "curses_initialized";
-  curses: { id: string; difficulty: number }[];
-};
-
-type ChangeDifficultyAction = {
-  type: "curse_difficulty_changed";
-  curseId: string;
-  difficulty: number;
-};
-
-type UpdateCurseCostAction = {
-  type: "curse_costs_updated";
-  curseDifficulty: number;
-  curseCost: number;
-};
-
 export type GameAction =
   | AddTeamAction
   | RemoveTeamAction
   | AddMemberAction
   | RemoveMemberAction
-  | SetRoleAction
-  | InitializeCursesAction
-  | ChangeDifficultyAction
-  | UpdateCurseCostAction;
+  | SetRoleAction;
 
 export interface GameState {
   teams: Team[];
-  curses: { id: string; difficulty: number }[];
-  cursesCosts: number[];
 }
 
 export type Team = {
@@ -82,7 +60,7 @@ export default function reducer(game: GameState, action: GameAction) {
         return team;
       });
 
-      return { ...game, teams: nextTeams };
+      return { ...game, teams: nextTeams } satisfies GameState;
     }
     case "member_removed": {
       const nextTeams = [...game.teams].map((team) => {
@@ -93,7 +71,7 @@ export default function reducer(game: GameState, action: GameAction) {
         return team;
       });
 
-      return { ...game, teams: nextTeams };
+      return { ...game, teams: nextTeams } satisfies GameState;
     }
     case "team_added": {
       const newTeam: Team = {
@@ -101,11 +79,11 @@ export default function reducer(game: GameState, action: GameAction) {
         role: Role.HIDER,
         members: [],
       };
-      return { ...game, teams: [...game.teams, newTeam] };
+      return { ...game, teams: [...game.teams, newTeam] } satisfies GameState;
     }
     case "team_removed": {
       const nextTeams = [...game.teams].filter((team) => team.name !== action.teamName);
-      return { ...game, teams: nextTeams };
+      return { ...game, teams: nextTeams } satisfies GameState;
     }
     case "role_set": {
       const nextTeams = [...game.teams].map((team) => {
@@ -114,24 +92,7 @@ export default function reducer(game: GameState, action: GameAction) {
         }
         return team;
       });
-      return { ...game, teams: nextTeams };
-    }
-    case "curses_initialized": {
-      return { ...game, curses: action.curses };
-    }
-
-    case "curse_difficulty_changed": {
-      let nextCurses = [...game.curses];
-      const curseIndex = nextCurses.findIndex((curse) => curse.id === action.curseId);
-
-      nextCurses[curseIndex] = { ...nextCurses[curseIndex], difficulty: action.difficulty };
-
-      return { ...game, curses: nextCurses };
-    }
-    case "curse_costs_updated": {
-      const nextCursesCosts = [...game.cursesCosts];
-      nextCursesCosts[action.curseDifficulty - 1] = action.curseCost;
-      return { ...game, cursesCosts: nextCursesCosts };
+      return { ...game, teams: nextTeams } satisfies GameState;
     }
   }
 }

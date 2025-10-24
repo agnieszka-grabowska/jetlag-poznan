@@ -2,7 +2,7 @@
 
 import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { FormEvent } from "react";
 import styles from "./page.module.css";
 import reducer, { GameState } from "./reducer";
 import { PostGamesRequest } from "@/app/api/games/route";
@@ -17,9 +17,9 @@ import { useCreateGame } from "@/app/services/mutations";
 
 const INITIAL_SETTINGS: GameState = {
   teams: [],
-  curses: [],
-  cursesCosts: [10, 30, 50],
 };
+
+const INITIAL_CURSES_COSTS = [10, 30, 50];
 
 export default function CreateGamePage() {
   const router = useRouter();
@@ -32,10 +32,6 @@ export default function CreateGamePage() {
   }, [game]);
 
   const { trigger, isMutating, error } = useCreateGame();
-
-  function initializeCurses(curses: { id: string; difficulty: number }[]) {
-    dispatch({ type: "curses_initialized", curses });
-  }
 
   function handleAddTeam(teamName: string) {
     if (game.teams.some((team) => team.name === teamName)) {
@@ -72,40 +68,31 @@ export default function CreateGamePage() {
     dispatch({ type: "member_removed", teamName, userId });
   }
 
-  function changeCurseDifficulty(curseId: string, difficulty: number) {
-    dispatch({ type: "curse_difficulty_changed", curseId, difficulty });
-  }
-
   function handleSubmitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    const checkedQuestionsIds = Array.from(
-      form.querySelectorAll("input[name='question']:checked")
-    ).map((cb) => cb.id);
+    const name = formData.get("gameName") as string;
+    const jailDuration = timeToMiliseconds(formData.get("jailDuration") as string);
+    const answerTimeLimit = timeToMiliseconds(formData.get("answerTimeLimit") as string);
+    const questionIds = formData.getAll("question") as string[];
+    const curseCosts = formData.getAll("curseCost").map((cost) => Number(cost));
 
-    const name = form.gameName.value;
-    const inputJailDuration: string = form.jailDuration.value;
-    const jailHours = Number(inputJailDuration.split(":")[0]);
-    const jailMinutes = Number(inputJailDuration.split(":")[1]);
-
-    const jailDuration = 1000 * 60 * jailMinutes + 1000 * 60 * 60 * jailHours;
-
-    const inputAnswerTimeLimit: string = form.answerTimeLimit.value;
-    const answerLimitHours = Number(inputAnswerTimeLimit.split(":")[0]);
-    const answerLimitMinutes = Number(inputAnswerTimeLimit.split(":")[1]);
-
-    const answerTimeLimit = 1000 * 60 * answerLimitMinutes + 1000 * 60 * 60 * answerLimitHours;
+    const inputsCurse = form.querySelectorAll<HTMLInputElement>("input[name='curse']");
+    const curses = Array.from(inputsCurse).map((curse) => ({
+      id: curse.id,
+      difficulty: Number(curse.value),
+    }));
 
     const requestData: PostGamesRequest = {
       name,
-      questionIds: checkedQuestionsIds,
+      questionIds,
       teams: game.teams,
-      curses: game.curses,
+      curses,
       answerTimeLimit,
       jailDuration,
-      curse_costs: game.cursesCosts,
+      curse_costs: curseCosts,
     };
 
     trigger(requestData).then((game) =>
@@ -113,13 +100,6 @@ export default function CreateGamePage() {
     );
   }
 
-  function handleCurseCostChange(e: ChangeEvent<HTMLInputElement>, curseDifficulty: 1 | 2 | 3) {
-    dispatch({
-      type: "curse_costs_updated",
-      curseDifficulty,
-      curseCost: Number(e.target.value),
-    });
-  }
   return (
     <>
       <Form onSubmit={handleSubmitForm}>
@@ -153,42 +133,17 @@ export default function CreateGamePage() {
 
         <fieldset>
           <legend>Curse Costs</legend>
-          <label>
-            Curses of difficulty 1
-            <input
-              type="number"
-              name="curseCost1"
-              defaultValue={game.cursesCosts[0]}
-              onChange={(e) => handleCurseCostChange(e, 1)}
-            />
-          </label>
-          <label>
-            Curses of difficulty 2
-            <input
-              type="number"
-              name="curseCost2"
-              defaultValue={game.cursesCosts[1]}
-              onChange={(e) => handleCurseCostChange(e, 2)}
-            />
-          </label>
-          <label>
-            Curses of difficulty 3
-            <input
-              type="number"
-              name="curseCost3"
-              defaultValue={game.cursesCosts[2]}
-              onChange={(e) => handleCurseCostChange(e, 3)}
-            />
-          </label>
+          {INITIAL_CURSES_COSTS.map((cost, index) => (
+            <label>
+              Curses of difficulty {index + 1}
+              <input type="number" min={1} name="curseCost" defaultValue={cost} />
+            </label>
+          ))}
         </fieldset>
 
         <fieldset>
           <legend>Curses</legend>
-          <CursesInput
-            curses={game.curses}
-            changeCurseDifficulty={changeCurseDifficulty}
-            initializeCurses={initializeCurses}
-          />
+          <CursesInput />
         </fieldset>
         <button className={styles.createButton} disabled={isMutating}>
           {isMutating ? <Spinner color="gray" /> : "Create"}
@@ -198,4 +153,12 @@ export default function CreateGamePage() {
       {error && <CardError>{error.message}</CardError>}
     </>
   );
+}
+
+function timeToMiliseconds(time: string): number {
+  const hours = Number(time.split(":")[0]);
+  const minutes = Number(time.split(":")[1]);
+
+  const miliseconds = 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
+  return miliseconds;
 }

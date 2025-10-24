@@ -47,8 +47,8 @@ export function useActiveCurses({ gameId, roundId }: { gameId: string; roundId: 
   );
 }
 
-export function useCurses(onSuccess: (data: GetCursesResponse) => void) {
-  return useSWR<GetCursesResponse>("/api/curses", fetcher, { onSuccess });
+export function useCurses() {
+  return useSWR<GetCursesResponse>("/api/curses");
 }
 
 export function useQuestions() {

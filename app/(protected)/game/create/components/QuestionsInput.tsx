@@ -29,7 +29,7 @@ export default function QuestionsInput() {
         {data.questions.map((question) => {
           return (
             <label key={question.id} className={styles.checkbox} style={{ flexDirection: "row" }}>
-              <input type="checkbox" defaultChecked={true} name="question" id={question.id} />
+              <input type="checkbox" defaultChecked={true} name="question" value={question.id} />
               <FlexWithGap gap={4}>
                 <Text type="title" tags={[{ children: question.cost.toString() }]}>
                   {question.content}
