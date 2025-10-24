@@ -4,7 +4,7 @@ if (!API_URL) {
   throw new Error("Environment variable NEXT_PUBLIC_API_URL is not defined.");
 }
 
-export async function fetcherFinal(
+export async function fetcher(
   url: string,
   options?: {
     arg?: {};

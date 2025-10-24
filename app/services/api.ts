@@ -12,7 +12,7 @@ import {
 } from "../api/games/[gameId]/rounds/[roundId]/questions/[questionId]/[teamId]/answer/route";
 import { QuestionRequest, QuestionResponse } from "../api/questions/questions-types";
 import { RegisterRequest, RegisterResponse } from "../api/register/route";
-import { fetcherFinal } from "./fetcher";
+import { fetcher } from "./fetcher";
 import { AskQuestionResponse } from "../api/questions/ask/[questionId]/route";
 import { DeleteRoundResponse } from "../api/games/[gameId]/rounds/[roundId]/route";
 import { ThrowCurseResponse } from "../api/curses/throw/[targetTeamId]/[difficulty]/route";
@@ -20,14 +20,14 @@ import { ThrowCurseResponse } from "../api/curses/throw/[targetTeamId]/[difficul
 // AUTH
 
 export function login(url: string, { arg }: { arg: LoginRequest }): Promise<LoginResponse> {
-  return fetcherFinal(url, { arg, method: "POST" });
+  return fetcher(url, { arg, method: "POST" });
 }
 
 export function register(
   url: string,
   { arg }: { arg: RegisterRequest }
 ): Promise<RegisterResponse> {
-  return fetcherFinal(url, { arg, method: "POST" });
+  return fetcher(url, { arg, method: "POST" });
 }
 
 // GAMES
@@ -36,46 +36,46 @@ export function createGame(
   url: string,
   { arg }: { arg: PostGamesRequest }
 ): Promise<PostGamesResponse> {
-  return fetcherFinal(url, { arg, method: "POST" });
+  return fetcher(url, { arg, method: "POST" });
 }
 
 // ROUNDS
 
 export function createRound(url: string): Promise<PostRoundResponse> {
-  return fetcherFinal(url, { method: "POST" });
+  return fetcher(url, { method: "POST" });
 }
 
 export function deleteRound(url: string): Promise<DeleteRoundResponse> {
-  return fetcherFinal(url, { method: "DELETE" });
+  return fetcher(url, { method: "DELETE" });
 }
 
 export function startRound(url: string): Promise<PatchRoundResponse> {
-  return fetcherFinal(url, { method: "PATCH" });
+  return fetcher(url, { method: "PATCH" });
 }
 
 export function stopRound(
   url: string,
   { arg }: { arg: StopRoundRequest }
 ): Promise<PatchRoundResponse> {
-  return fetcherFinal(url, { arg, method: "PATCH" });
+  return fetcher(url, { arg, method: "PATCH" });
 }
 
 // CURSES
 
 export function deleteCurse(url: string): Promise<DeleteCursesResponse> {
-  return fetcherFinal(url, { method: "DELETE" });
+  return fetcher(url, { method: "DELETE" });
 }
 
 export function liftCurse(url: string): Promise<LiftCurseResponse> {
-  return fetcherFinal(url, { method: "POST" });
+  return fetcher(url, { method: "POST" });
 }
 
 export function vetoCurse(url: string): Promise<VetoCurseResponse> {
-  return fetcherFinal(url, { method: "POST" });
+  return fetcher(url, { method: "POST" });
 }
 
 export function throwCurse(url: string): Promise<ThrowCurseResponse> {
-  return fetcherFinal(url, { method: "POST" });
+  return fetcher(url, { method: "POST" });
 }
 
 // QUESTIONS
@@ -84,27 +84,27 @@ export function createQuestion(
   url: string,
   { arg }: { arg: QuestionRequest }
 ): Promise<QuestionResponse> {
-  return fetcherFinal(url, { arg, method: "POST" });
+  return fetcher(url, { arg, method: "POST" });
 }
 
 export function editQuestion(
   url: string,
   { arg }: { arg: QuestionRequest }
 ): Promise<QuestionResponse> {
-  return fetcherFinal(url, { arg, method: "PUT" });
+  return fetcher(url, { arg, method: "PUT" });
 }
 
 export function deleteQuestion(url: string): Promise<QuestionResponse> {
-  return fetcherFinal(url, { method: "DELETE" });
+  return fetcher(url, { method: "DELETE" });
 }
 
 export function answerQuestion(
   url: string,
   { arg }: { arg: AnswerQuestionRequest }
 ): Promise<AnswerQuestionResponse> {
-  return fetcherFinal(url, { arg, method: "POST" });
+  return fetcher(url, { arg, method: "POST" });
 }
 
 export function askQuestion(url: string): Promise<AskQuestionResponse> {
-  return fetcherFinal(url, { method: "POST" });
+  return fetcher(url, { method: "POST" });
 }
