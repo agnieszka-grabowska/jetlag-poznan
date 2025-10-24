@@ -4,7 +4,7 @@ import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import React, { FormEvent } from "react";
 import styles from "./page.module.css";
-import reducer, { GameState } from "./reducer";
+import reducer from "./reducer";
 import { PostGamesRequest } from "@/app/api/games/route";
 import Form from "@/app/ui/components/Form/Form";
 import Spinner from "@/app/ui/components/spinner/spinner";
@@ -15,20 +15,17 @@ import CursesInput from "./components/CursesInput";
 import { useCheckUsername, useCreateGame } from "@/app/services/mutations";
 import toast from "react-hot-toast";
 
-const INITIAL_SETTINGS: GameState = {
-  teams: [],
-};
-
 const INITIAL_CURSES_COSTS = [10, 30, 50];
 
 export default function CreateGamePage() {
   const router = useRouter();
-  const [game, dispatch] = React.useReducer(reducer, INITIAL_SETTINGS);
+  const [teams, dispatch] = React.useReducer(reducer, []);
   const { trigger, isMutating } = useCreateGame();
   const { trigger: triggerUsernameCheck } = useCheckUsername();
 
   function handleAddTeam(teamName: string) {
-    if (game.teams.some((team) => team.name === teamName)) {
+    const teamAlreadyExists = teams.some((team) => team.name === teamName);
+    if (teamAlreadyExists) {
       toast.error(`There already is team named ${teamName}`);
       return false;
     } else {
@@ -82,7 +79,7 @@ export default function CreateGamePage() {
     const requestData: PostGamesRequest = {
       name,
       questionIds,
-      teams: game.teams,
+      teams,
       curses,
       answerTimeLimit,
       jailDuration,
@@ -113,7 +110,7 @@ export default function CreateGamePage() {
 
       <InputWithAddButton label="Teams" onClick={handleAddTeam} />
       <Teams
-        teams={game.teams}
+        teams={teams}
         removeTeam={handleRemoveTeam}
         changeRole={handleChangeRole}
         addMember={handleAddMember}

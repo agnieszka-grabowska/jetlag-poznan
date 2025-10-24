@@ -35,10 +35,6 @@ export type GameAction =
   | RemoveMemberAction
   | SetRoleAction;
 
-export interface GameState {
-  teams: Team[];
-}
-
 export type Team = {
   name: string;
   role: Role;
@@ -47,10 +43,10 @@ export type Team = {
 
 export type User = { id: string; username: string };
 
-export default function reducer(game: GameState, action: GameAction) {
+export default function reducer(teams: Team[], action: GameAction) {
   switch (action.type) {
     case "member_added": {
-      const nextTeams = [...game.teams].map((team) => {
+      const nextTeams = [...teams].map((team) => {
         if (team.name === action.teamName) {
           return {
             ...team,
@@ -60,10 +56,10 @@ export default function reducer(game: GameState, action: GameAction) {
         return team;
       });
 
-      return { ...game, teams: nextTeams } satisfies GameState;
+      return nextTeams satisfies Team[];
     }
     case "member_removed": {
-      const nextTeams = [...game.teams].map((team) => {
+      const nextTeams = [...teams].map((team) => {
         if (team.name === action.teamName) {
           const nextTeamMembers = [...team.members].filter(({ id }) => id !== action.userId);
           return { ...team, members: nextTeamMembers };
@@ -71,7 +67,7 @@ export default function reducer(game: GameState, action: GameAction) {
         return team;
       });
 
-      return { ...game, teams: nextTeams } satisfies GameState;
+      return nextTeams satisfies Team[];
     }
     case "team_added": {
       const newTeam: Team = {
@@ -79,20 +75,20 @@ export default function reducer(game: GameState, action: GameAction) {
         role: Role.HIDER,
         members: [],
       };
-      return { ...game, teams: [...game.teams, newTeam] } satisfies GameState;
+      return [...teams, newTeam] satisfies Team[];
     }
     case "team_removed": {
-      const nextTeams = [...game.teams].filter((team) => team.name !== action.teamName);
-      return { ...game, teams: nextTeams } satisfies GameState;
+      const nextTeams = [...teams].filter((team) => team.name !== action.teamName);
+      return nextTeams satisfies Team[];
     }
     case "role_set": {
-      const nextTeams = [...game.teams].map((team) => {
+      const nextTeams = [...teams].map((team) => {
         if (team.name === action.teamName) {
           return { ...team, role: action.role };
         }
         return team;
       });
-      return { ...game, teams: nextTeams } satisfies GameState;
+      return nextTeams satisfies Team[];
     }
   }
 }
