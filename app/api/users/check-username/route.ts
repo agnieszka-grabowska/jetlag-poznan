@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 import { validateSession } from "@/app/api/auth";
 import { User } from "@prisma/client";
 
-type Params = Promise<{ username: string }>;
+export type UserRequest = { username: string };
 export type UserResponse = { user: Omit<User, "password"> };
-export async function GET(_: Request, { params }: { params: Params }) {
+
+export async function POST(request: Request) {
   await validateSession();
-  const { username } = await params;
+  const { username } = (await request.json()) as UserRequest;
   const user = await db.user.findFirst({
     where: {
       username,

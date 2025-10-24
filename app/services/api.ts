@@ -16,6 +16,7 @@ import { fetcher } from "./fetcher";
 import { AskQuestionResponse } from "../api/questions/ask/[questionId]/route";
 import { DeleteRoundResponse } from "../api/games/[gameId]/rounds/[roundId]/route";
 import { ThrowCurseResponse } from "../api/curses/throw/[targetTeamId]/[difficulty]/route";
+import { UserRequest, UserResponse } from "../api/users/check-username/route";
 
 // AUTH
 
@@ -27,6 +28,12 @@ export function register(
   url: string,
   { arg }: { arg: RegisterRequest }
 ): Promise<RegisterResponse> {
+  return fetcher(url, { arg, method: "POST" });
+}
+
+// USERS
+
+export function checkUsername(url: string, { arg }: { arg: UserRequest }): Promise<UserResponse> {
   return fetcher(url, { arg, method: "POST" });
 }
 

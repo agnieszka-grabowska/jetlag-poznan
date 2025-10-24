@@ -12,7 +12,7 @@ import QuestionsInput from "./components/QuestionsInput";
 import InputWithAddButton from "./components/InputWithAddButton";
 import Teams from "./components/Teams";
 import CursesInput from "./components/CursesInput";
-import { useCreateGame } from "@/app/services/mutations";
+import { useCheckUsername, useCreateGame } from "@/app/services/mutations";
 import toast from "react-hot-toast";
 
 const INITIAL_SETTINGS: GameState = {
@@ -24,7 +24,8 @@ const INITIAL_CURSES_COSTS = [10, 30, 50];
 export default function CreateGamePage() {
   const router = useRouter();
   const [game, dispatch] = React.useReducer(reducer, INITIAL_SETTINGS);
-  const { trigger, isMutating, error } = useCreateGame();
+  const { trigger, isMutating } = useCreateGame();
+  const { trigger: triggerUsernameCheck } = useCheckUsername();
 
   function handleAddTeam(teamName: string) {
     if (game.teams.some((team) => team.name === teamName)) {
@@ -36,17 +37,13 @@ export default function CreateGamePage() {
     }
   }
 
-  async function handleAddMember(teamName: string, username: string) {
-    const response = await fetch(`/api/users/${username}`);
-
-    if (response.ok) {
-      const { user } = await response.json();
-      dispatch({ type: "member_added", user, teamName });
-      return true;
-    } else {
-      toast.error(response.statusText);
-      return false;
-    }
+  async function handleAddMember(teamName: string, username: string): Promise<boolean> {
+    return triggerUsernameCheck({ username })
+      .then(({ user }) => {
+        dispatch({ type: "member_added", user, teamName });
+        return true;
+      })
+      .catch(() => false);
   }
 
   function handleRemoveTeam(teamName: string) {

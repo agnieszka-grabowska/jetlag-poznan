@@ -4,6 +4,7 @@ import useSWRMutation from "swr/mutation";
 import {
   answerQuestion,
   askQuestion,
+  checkUsername,
   createGame,
   createQuestion,
   createRound,
@@ -32,6 +33,14 @@ export function useLogin() {
 
 export function useRegister() {
   return useSWRMutation("/api/register", register);
+}
+
+// USERS
+
+export function useCheckUsername() {
+  return useSWRMutation(`/api/users/check-username`, checkUsername, {
+    onError: showToast,
+  });
 }
 
 // GAMES
