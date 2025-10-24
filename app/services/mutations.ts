@@ -37,7 +37,9 @@ export function useRegister() {
 // GAMES
 
 export function useCreateGame() {
-  return useSWRMutation("/api/games", createGame);
+  return useSWRMutation("/api/games", createGame, {
+    onError: showToast,
+  });
 }
 
 // ROUNDS

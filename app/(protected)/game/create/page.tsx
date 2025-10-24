@@ -7,13 +7,13 @@ import styles from "./page.module.css";
 import reducer, { GameState } from "./reducer";
 import { PostGamesRequest } from "@/app/api/games/route";
 import Form from "@/app/ui/components/Form/Form";
-import CardError from "@/app/ui/components/card/CardError";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import QuestionsInput from "./components/QuestionsInput";
 import InputWithAddButton from "./components/InputWithAddButton";
 import Teams from "./components/Teams";
 import CursesInput from "./components/CursesInput";
 import { useCreateGame } from "@/app/services/mutations";
+import toast from "react-hot-toast";
 
 const INITIAL_SETTINGS: GameState = {
   teams: [],
@@ -23,19 +23,12 @@ const INITIAL_CURSES_COSTS = [10, 30, 50];
 
 export default function CreateGamePage() {
   const router = useRouter();
-
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
   const [game, dispatch] = React.useReducer(reducer, INITIAL_SETTINGS);
-
-  React.useEffect(() => {
-    setErrorMessage("");
-  }, [game]);
-
   const { trigger, isMutating, error } = useCreateGame();
 
   function handleAddTeam(teamName: string) {
     if (game.teams.some((team) => team.name === teamName)) {
-      setErrorMessage(`There already is team named ${teamName}`);
+      toast.error(`There already is team named ${teamName}`);
       return false;
     } else {
       dispatch({ type: "team_added", teamName });
@@ -51,7 +44,7 @@ export default function CreateGamePage() {
       dispatch({ type: "member_added", user, teamName });
       return true;
     } else {
-      setErrorMessage(response.statusText);
+      toast.error(response.statusText);
       return false;
     }
   }
@@ -77,6 +70,10 @@ export default function CreateGamePage() {
     const jailDuration = timeToMiliseconds(formData.get("jailDuration") as string);
     const answerTimeLimit = timeToMiliseconds(formData.get("answerTimeLimit") as string);
     const questionIds = formData.getAll("question") as string[];
+    if (questionIds.length === 0) {
+      toast.error("Add at least one question to game");
+      return;
+    }
     const curseCosts = formData.getAll("curseCost").map((cost) => Number(cost));
 
     const inputsCurse = form.querySelectorAll<HTMLInputElement>("input[name='curse']");
@@ -101,57 +98,53 @@ export default function CreateGamePage() {
   }
 
   return (
-    <>
-      <Form onSubmit={handleSubmitForm}>
-        <label>
-          Game Name
-          <input type="text" name="gameName" required />
-        </label>
+    <Form onSubmit={handleSubmitForm}>
+      <label>
+        Game Name
+        <input type="text" name="gameName" required />
+      </label>
 
-        <label>
-          Answer Time Limit
-          <input type="time" name="answerTimeLimit" min="00:01" defaultValue="00:15" required />
-        </label>
+      <label>
+        Answer Time Limit
+        <input type="time" name="answerTimeLimit" min="00:01" defaultValue="00:15" required />
+      </label>
 
-        <label>
-          Seekers&apos; Jail Period
-          <input type="time" name="jailDuration" min="00:01" defaultValue="00:30" required />
-        </label>
+      <label>
+        Seekers&apos; Jail Period
+        <input type="time" name="jailDuration" min="00:01" defaultValue="00:30" required />
+      </label>
 
-        <InputWithAddButton label="Teams" onClick={handleAddTeam} />
-        <Teams
-          teams={game.teams}
-          removeTeam={handleRemoveTeam}
-          changeRole={handleChangeRole}
-          addMember={handleAddMember}
-          removeMember={handleRemoveMember}
-        ></Teams>
-        <fieldset>
-          <legend>Questions</legend>
-          <QuestionsInput />
-        </fieldset>
+      <InputWithAddButton label="Teams" onClick={handleAddTeam} />
+      <Teams
+        teams={game.teams}
+        removeTeam={handleRemoveTeam}
+        changeRole={handleChangeRole}
+        addMember={handleAddMember}
+        removeMember={handleRemoveMember}
+      ></Teams>
+      <fieldset>
+        <legend>Questions</legend>
+        <QuestionsInput />
+      </fieldset>
 
-        <fieldset>
-          <legend>Curse Costs</legend>
-          {INITIAL_CURSES_COSTS.map((cost, index) => (
-            <label>
-              Curses of difficulty {index + 1}
-              <input type="number" min={1} name="curseCost" defaultValue={cost} />
-            </label>
-          ))}
-        </fieldset>
+      <fieldset>
+        <legend>Curse Costs</legend>
+        {INITIAL_CURSES_COSTS.map((cost, index) => (
+          <label key={index}>
+            Curses of difficulty {index + 1}
+            <input type="number" min={1} name="curseCost" defaultValue={cost} />
+          </label>
+        ))}
+      </fieldset>
 
-        <fieldset>
-          <legend>Curses</legend>
-          <CursesInput />
-        </fieldset>
-        <button className={styles.createButton} disabled={isMutating}>
-          {isMutating ? <Spinner color="gray" /> : "Create"}
-        </button>
-      </Form>
-      {errorMessage && <CardError>{errorMessage}</CardError>}
-      {error && <CardError>{error.message}</CardError>}
-    </>
+      <fieldset>
+        <legend>Curses</legend>
+        <CursesInput />
+      </fieldset>
+      <button className={styles.createButton} disabled={isMutating}>
+        {isMutating ? <Spinner color="gray" /> : "Create"}
+      </button>
+    </Form>
   );
 }
 
