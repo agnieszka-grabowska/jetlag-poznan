@@ -27,7 +27,7 @@ export default function Games() {
 
   return (
     <>
-      {data.games.map((game) => (
+      {data.map((game) => (
         <li key={game.id}>
           <Link href={`/game/${game.id}/rounds/${game.rounds.at(-1)?.id}`}>
             <Text type="title" tags={game.isActive ? [{ children: "active", hue: 0 }] : undefined}>

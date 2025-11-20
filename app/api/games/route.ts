@@ -4,7 +4,7 @@ import { validateSession } from "@/app/api/auth";
 import { db } from "@/app/api/db";
 import { User } from "@/app/(protected)/game/create/reducer";
 
-export type GetGamesResponse = { games: Array<Game & { isActive: boolean; rounds: Array<Round> }> };
+export type GamesResponse = Array<Game & { isActive: boolean; rounds: Array<Round> }>;
 
 export async function GET() {
   const userId = await validateSession();
@@ -35,14 +35,12 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json<GetGamesResponse>({
-    games: [
-      ...games.map((game) => {
-        const gameHasUnfinishedRound = game.rounds.some((round) => round.end_time === null);
-        return { ...game, isActive: gameHasUnfinishedRound };
-      }),
-    ],
-  });
+  return NextResponse.json<GamesResponse>([
+    ...games.map((game) => {
+      const gameHasUnfinishedRound = game.rounds.some((round) => round.end_time === null);
+      return { ...game, isActive: gameHasUnfinishedRound };
+    }),
+  ]);
 }
 
 export type PostGamesRequest = {

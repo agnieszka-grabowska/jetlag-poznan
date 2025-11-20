@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { GetGamesResponse } from "../api/games/route";
+import { GamesResponse } from "../api/games/route";
 import { GameResponse } from "../api/games/[gameId]/route";
 import { RoundResponse } from "../api/games/[gameId]/rounds/[roundId]/route";
 import { fetcher } from "./fetcher";
@@ -11,7 +11,7 @@ import { GetCursesResponse } from "../api/curses/route";
 import { GetQuestionsResponse } from "../api/questions/route";
 
 export function useGames() {
-  return useSWR<GetGamesResponse>("/api/games");
+  return useSWR<GamesResponse>("/api/games");
 }
 
 export function useGame(id: string) {
