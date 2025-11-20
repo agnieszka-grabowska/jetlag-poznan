@@ -8,14 +8,14 @@ import { useRoundContext } from "../RoundProvider";
 
 export default function TimeLeftToAnswer({ askedAt }: { askedAt: Date }) {
   const { answer_time_limit } = useGameContext();
-  const { round } = useRoundContext();
+  const { end_time } = useRoundContext();
 
   const timeLeftToAnswer = useCountdown({
     startTime: askedAt,
     period: answer_time_limit,
   });
 
-  if (round.end_time) {
+  if (end_time) {
     return;
   }
 

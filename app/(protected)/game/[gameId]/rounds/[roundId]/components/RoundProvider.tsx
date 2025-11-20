@@ -1,6 +1,6 @@
 "use client";
 
-import { GetRoundResponse } from "@/app/api/games/[gameId]/rounds/[roundId]/route";
+import { RoundResponse } from "@/app/api/games/[gameId]/rounds/[roundId]/route";
 import Center from "@/app/ui/components/Center/Center";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import { useParams } from "next/navigation";
@@ -8,7 +8,7 @@ import React, { ReactNode } from "react";
 import GridSkeleton from "./GridSkeleton";
 import { useRound } from "@/app/services/queries";
 
-const RoundContext = React.createContext<GetRoundResponse | null>(null);
+const RoundContext = React.createContext<RoundResponse | null>(null);
 
 export default function RoundProvider({ children }: { children: ReactNode }) {
   const params: { gameId: string; roundId: string } = useParams();
@@ -40,7 +40,7 @@ export default function RoundProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  return <RoundContext.Provider value={{ round: data.round }}>{children}</RoundContext.Provider>;
+  return <RoundContext.Provider value={data}>{children}</RoundContext.Provider>;
 }
 
 export function useRoundContext() {

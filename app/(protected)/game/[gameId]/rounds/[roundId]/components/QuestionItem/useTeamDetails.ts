@@ -3,9 +3,9 @@
 import { useRoundContext } from "../RoundProvider";
 
 export function useTeamDetails(teamId: string) {
-  const { round } = useRoundContext();
+  const { teams } = useRoundContext();
 
-  const teamDetails = round.teams.find((team) => team.id === teamId);
+  const teamDetails = teams.find((team) => team.id === teamId);
 
   if (!teamDetails) {
     throw Error(`Could not find team of id ${teamId}`);

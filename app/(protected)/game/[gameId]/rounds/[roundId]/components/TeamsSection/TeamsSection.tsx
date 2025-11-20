@@ -9,8 +9,8 @@ import { formatTime } from "@/app/helpers";
 import useVetoCountdown from "../useVetoTime";
 
 export default function TeamsSection() {
-  const { round } = useRoundContext();
-  const seekerTeams = round.teams.filter((team) => team.role === "SEEKER");
+  const { teams } = useRoundContext();
+  const seekerTeams = teams.filter((team) => team.role === "SEEKER");
 
   return (
     <div className={styles.teamsWrapper}>
@@ -22,8 +22,8 @@ export default function TeamsSection() {
 }
 
 function TeamCard({ teamId }: { teamId: string }) {
-  const { round } = useRoundContext();
-  const team = round.teams.find((team) => team.id === teamId);
+  const { teams } = useRoundContext();
+  const team = teams.find((team) => team.id === teamId);
 
   if (!team) {
     throw Error(`Could not find team of id ${teamId}`);

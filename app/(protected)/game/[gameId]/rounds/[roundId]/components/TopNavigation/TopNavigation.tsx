@@ -8,8 +8,8 @@ import { formatTime } from "@/app/helpers";
 import GameControlButton from "../GameButtons/GameControlButton";
 
 export function TopNavigation() {
-  const { round } = useRoundContext();
-  const time = useGameTime({ endTime: round.end_time, startTime: round.start_time });
+  const { end_time, start_time } = useRoundContext();
+  const time = useGameTime({ endTime: end_time, startTime: start_time });
 
   return (
     <nav className={styles.nav}>

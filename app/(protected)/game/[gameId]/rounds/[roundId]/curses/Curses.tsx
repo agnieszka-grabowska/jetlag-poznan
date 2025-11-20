@@ -7,7 +7,7 @@ import { useRoundContext } from "../components/RoundProvider";
 import useUserTeam from "@/app/hooks/use_user_team";
 
 export default function Curses({ teamId }: { teamId?: string }) {
-  const { round } = useRoundContext();
+  const round = useRoundContext();
   const { userTeam } = useUserTeam();
 
   let curses: Array<TeamRoundCurse> = [];

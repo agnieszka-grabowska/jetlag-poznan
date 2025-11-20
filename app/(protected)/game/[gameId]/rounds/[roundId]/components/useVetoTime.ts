@@ -4,9 +4,9 @@ import { useRoundContext } from "./RoundProvider";
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
 export default function useVetoCountdown(teamId: string): number {
-  const { round } = useRoundContext();
+  const { curses } = useRoundContext();
 
-  const teamVetoedCurses = round.curses
+  const teamVetoedCurses = curses
     .filter((curse) => curse.teamId === teamId)
     .map((curse) => curse.vetoed_at)
     .filter((vetoed_at) => vetoed_at !== null)

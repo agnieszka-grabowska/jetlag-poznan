@@ -23,13 +23,13 @@ export default function AnswerForm({
   ownerTeamId?: string;
 }) {
   const { answer_time_limit } = useGameContext();
-  const { round } = useRoundContext();
+  const { end_time } = useRoundContext();
   const timeLeftToAnswer = useCountdown({
     startTime: askedAt,
     period: answer_time_limit,
   });
 
-  if (round.end_time) {
+  if (end_time) {
     return;
   }
 
@@ -44,8 +44,8 @@ function Form({ ownerTeamId, questionId }: { ownerTeamId: string; questionId: st
 
   const [photoIsUploading, setPhotoIsUploading] = React.useState(false);
 
-  const { round } = useRoundContext();
-  const ownerTeamMembersIds = round.teams
+  const { teams } = useRoundContext();
+  const ownerTeamMembersIds = teams
     .find((team) => team.id === ownerTeamId)
     ?.members.map((member) => member.id);
 

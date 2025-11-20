@@ -3,7 +3,7 @@
 import useSWR from "swr";
 import { GetGamesResponse } from "../api/games/route";
 import { GameResponse } from "../api/games/[gameId]/route";
-import { GetRoundResponse } from "../api/games/[gameId]/rounds/[roundId]/route";
+import { RoundResponse } from "../api/games/[gameId]/rounds/[roundId]/route";
 import { fetcher } from "./fetcher";
 import { GetPendingQuestionsResponse } from "../api/games/[gameId]/rounds/[roundId]/numberOfPendingQuestions/route";
 import { GetActiveCursesResponse } from "../api/games/[gameId]/rounds/[roundId]/numberOfActiveCurses/route";
@@ -19,9 +19,9 @@ export function useGame(id: string) {
 }
 
 export function useRound({ gameId, roundId }: { gameId: string; roundId: string }) {
-  return useSWR<GetRoundResponse>(`/api/games/${gameId}/rounds/${roundId}`, fetcher, {
+  return useSWR<RoundResponse>(`/api/games/${gameId}/rounds/${roundId}`, fetcher, {
     refreshInterval: (latestData) => {
-      if (latestData?.round.winner_id) return 0;
+      if (latestData?.winner_id) return 0;
       return 3000;
     },
   });

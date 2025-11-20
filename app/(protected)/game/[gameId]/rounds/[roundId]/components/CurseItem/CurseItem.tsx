@@ -12,7 +12,7 @@ import { useCurseDetails } from "../useCurseDetails";
 
 export default function CurseItem({ curse }: { curse: TeamRoundCurse }) {
   const { userTeam } = useUserTeam();
-  const { round } = useRoundContext();
+  const { teams, end_time } = useRoundContext();
   const { curseDetails } = useCurseDetails(curse.curseId);
 
   const curseIsActive = !curse.lifted_at && !curse.vetoed_at;
@@ -21,7 +21,7 @@ export default function CurseItem({ curse }: { curse: TeamRoundCurse }) {
 
   const isTarget = curse.teamId === userTeam.id;
 
-  const targetTeamName = round.teams.find((team) => team.id === curse.teamId)?.name;
+  const targetTeamName = teams.find((team) => team.id === curse.teamId)?.name;
 
   return (
     <Item style={curseIsActive ? "red" : "default"}>
@@ -52,14 +52,14 @@ export default function CurseItem({ curse }: { curse: TeamRoundCurse }) {
         {curseIsActive && (
           <>
             <Text type="description">{curseDetails.effect}</Text>
-            {userIsHider && !round.end_time && (
+            {userIsHider && !end_time && (
               <LiftCurseButton
                 curseId={curse.curseId}
                 teamId={curse.teamId}
                 createdAt={curse.created_at}
               />
             )}
-            {isTarget && !round.end_time && (
+            {isTarget && !end_time && (
               <VetoCurseButton curseId={curse.curseId} createdAt={curse.created_at} />
             )}
           </>

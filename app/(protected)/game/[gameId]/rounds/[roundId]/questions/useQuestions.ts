@@ -18,7 +18,7 @@ export type QuestionModel = {
 };
 
 export function useSeekerViewQuestions() {
-  const { round } = useRoundContext();
+  const round = useRoundContext();
   const { game_questions } = useGameContext();
   const { userTeam } = useUserTeam();
 
@@ -45,7 +45,7 @@ export function useSeekerViewQuestions() {
 }
 
 export function useHiderViewQuestions() {
-  const { round } = useRoundContext();
+  const round = useRoundContext();
   const { game_questions } = useGameContext();
 
   const questions: QuestionModel[] = round.questions

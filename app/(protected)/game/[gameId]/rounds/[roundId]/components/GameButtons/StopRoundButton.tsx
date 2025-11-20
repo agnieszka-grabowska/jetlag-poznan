@@ -10,13 +10,13 @@ import Spinner from "@/app/ui/components/spinner/spinner";
 import { useStopRound } from "@/app/services/mutations";
 
 export default function StopRoundButton() {
-  const { round } = useRoundContext();
+  const { start_time } = useRoundContext();
   const { jail_duration } = useGameContext();
   const { userTeam } = useUserTeam();
 
   const jailTimeLeft = useCountdown({
     period: jail_duration,
-    startTime: round.start_time!,
+    startTime: start_time!,
   });
 
   const { trigger, isMutating } = useStopRound();

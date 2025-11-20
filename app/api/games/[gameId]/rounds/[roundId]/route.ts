@@ -15,7 +15,7 @@ export type Team = {
   members: Array<Member>;
 };
 
-type Round = {
+export interface RoundResponse {
   id: string;
   gameId: string;
   start_time: Date | null;
@@ -24,11 +24,7 @@ type Round = {
   teams: Array<Team>;
   curses: Array<TeamRoundCurse>;
   questions: Array<TeamRoundQuestion>;
-};
-
-export type GetRoundResponse = {
-  round: Round;
-};
+}
 
 type Params = Promise<{ gameId: string; roundId: string }>;
 
@@ -82,19 +78,17 @@ export async function GET(_request: Request, { params }: { params: Params }) {
     },
   });
 
-  return NextResponse.json<GetRoundResponse>({
-    round: {
-      ...round,
-      teams: round.teams.map((team): Team => {
-        return {
-          id: team.teamId,
-          role: team.role,
-          coins: team.coins,
-          name: team.team.name,
-          members: team.team.members,
-        };
-      }),
-    },
+  return NextResponse.json<RoundResponse>({
+    ...round,
+    teams: round.teams.map((team): Team => {
+      return {
+        id: team.teamId,
+        role: team.role,
+        coins: team.coins,
+        name: team.team.name,
+        members: team.team.members,
+      };
+    }),
   });
 }
 

@@ -6,13 +6,13 @@ import Item from "@/app/ui/components/Item/Item";
 import { Text } from "@/app/ui/components/text/text";
 
 export default function Winner() {
-  const { round } = useRoundContext();
+  const { teams, winner_id } = useRoundContext();
 
-  if (!round.winner_id) {
+  if (!winner_id) {
     return;
   }
 
-  const winnerTeam = round.teams.find((team) => team.id === round.winner_id);
+  const winnerTeam = teams.find((team) => team.id === winner_id);
 
   if (!winnerTeam) {
     throw Error("Winner not found");

@@ -10,9 +10,9 @@ import { useAskQuestion } from "@/app/services/mutations";
 
 export default function AskButton({ questionId }: { questionId: string }) {
   const { userTeam } = useUserTeam();
-  const { round } = useRoundContext();
+  const { start_time, end_time } = useRoundContext();
 
-  if (userTeam.role === "HIDER" || !round.start_time || round.end_time) {
+  if (userTeam.role === "HIDER" || !start_time || end_time) {
     return;
   }
 
@@ -21,13 +21,13 @@ export default function AskButton({ questionId }: { questionId: string }) {
 
 function Button({ questionId }: { questionId: string }) {
   const { jail_duration } = useGameContext();
-  const { round } = useRoundContext();
+  const { start_time } = useRoundContext();
 
   const { trigger, isMutating } = useAskQuestion(questionId);
 
   const jailTimeLeft = useCountdown({
     period: jail_duration,
-    startTime: round.start_time!,
+    startTime: start_time!,
   });
 
   return (

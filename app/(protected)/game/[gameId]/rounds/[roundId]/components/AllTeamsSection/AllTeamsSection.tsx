@@ -7,13 +7,13 @@ import Tag from "@/app/ui/components/tag/tag";
 import { useRoundContext } from "../RoundProvider";
 
 export default function AllTeamsSection() {
-  const { round } = useRoundContext();
+  const { teams } = useRoundContext();
   return (
     <>
       <div>
         <Header>Teams</Header>
         <div className={styles.teamsWrapper}>
-          {round.teams.map((team) => {
+          {teams.map((team) => {
             return (
               <Item key={team.id}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
