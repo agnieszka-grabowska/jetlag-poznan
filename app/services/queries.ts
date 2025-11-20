@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { GetGamesResponse } from "../api/games/route";
-import { GetGameResponse } from "../api/games/[gameId]/route";
+import { GameResponse } from "../api/games/[gameId]/route";
 import { GetRoundResponse } from "../api/games/[gameId]/rounds/[roundId]/route";
 import { fetcher } from "./fetcher";
 import { GetPendingQuestionsResponse } from "../api/games/[gameId]/rounds/[roundId]/numberOfPendingQuestions/route";
@@ -15,7 +15,7 @@ export function useGames() {
 }
 
 export function useGame(id: string) {
-  return useSWR<GetGameResponse>(`/api/games/${id}`);
+  return useSWR<GameResponse>(`/api/games/${id}`);
 }
 
 export function useRound({ gameId, roundId }: { gameId: string; roundId: string }) {

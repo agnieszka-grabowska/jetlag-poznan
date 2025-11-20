@@ -19,10 +19,10 @@ export type QuestionModel = {
 
 export function useSeekerViewQuestions() {
   const { round } = useRoundContext();
-  const { game } = useGameContext();
+  const { game_questions } = useGameContext();
   const { userTeam } = useUserTeam();
 
-  const questions: QuestionModel[] = game.game_questions
+  const questions: QuestionModel[] = game_questions
     .map((q): QuestionModel => {
       const questionDetails = round.questions.find(
         (ques) => ques.questionId === q.id && ques.teamId === userTeam.id
@@ -46,11 +46,11 @@ export function useSeekerViewQuestions() {
 
 export function useHiderViewQuestions() {
   const { round } = useRoundContext();
-  const { game } = useGameContext();
+  const { game_questions } = useGameContext();
 
   const questions: QuestionModel[] = round.questions
     .map((q): QuestionModel => {
-      const questionDetails = game.game_questions.find((ques) => ques.id === q.questionId);
+      const questionDetails = game_questions.find((ques) => ques.id === q.questionId);
 
       if (!questionDetails) {
         throw Error(`Could not find game question of id ${q.questionId}`);

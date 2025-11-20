@@ -3,16 +3,18 @@ import { NextResponse } from "next/server";
 import { Game, Question, Round } from "@prisma/client";
 import { validateSession } from "@/app/api/auth";
 
-type GameCurse = {
+interface GameCurse {
   curseId: string;
   name: string;
   effect: string;
   difficulty: number;
-};
+}
 
-export type GetGameResponse = {
-  game: Game & { game_curses: Array<GameCurse>; game_questions: Question[]; rounds: Round[] };
-};
+export interface GameResponse extends Game {
+  game_curses: Array<GameCurse>;
+  game_questions: Question[];
+  rounds: Round[];
+}
 
 type Params = Promise<{ gameId: string }>;
 
@@ -62,18 +64,16 @@ export async function GET(_: Request, { params }: { params: Params }) {
     },
   });
 
-  return NextResponse.json<GetGameResponse>({
-    game: {
-      ...game,
-      game_curses: game.game_curses.map((gameCurse): GameCurse => {
-        return {
-          curseId: gameCurse.curseId,
-          difficulty: gameCurse.difficulty,
-          effect: gameCurse.curse.effect,
-          name: gameCurse.curse.name,
-        };
-      }),
-    },
+  return NextResponse.json<GameResponse>({
+    ...game,
+    game_curses: game.game_curses.map((gameCurse): GameCurse => {
+      return {
+        curseId: gameCurse.curseId,
+        difficulty: gameCurse.difficulty,
+        effect: gameCurse.curse.effect,
+        name: gameCurse.curse.name,
+      };
+    }),
   });
 }
 

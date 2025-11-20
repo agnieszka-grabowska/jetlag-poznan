@@ -11,11 +11,11 @@ import { useStopRound } from "@/app/services/mutations";
 
 export default function StopRoundButton() {
   const { round } = useRoundContext();
-  const { game } = useGameContext();
+  const { jail_duration } = useGameContext();
   const { userTeam } = useUserTeam();
 
   const jailTimeLeft = useCountdown({
-    period: game.jail_duration,
+    period: jail_duration,
     startTime: round.start_time!,
   });
 

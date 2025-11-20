@@ -20,13 +20,13 @@ export default function AskButton({ questionId }: { questionId: string }) {
 }
 
 function Button({ questionId }: { questionId: string }) {
-  const { game } = useGameContext();
+  const { jail_duration } = useGameContext();
   const { round } = useRoundContext();
 
   const { trigger, isMutating } = useAskQuestion(questionId);
 
   const jailTimeLeft = useCountdown({
-    period: game.jail_duration,
+    period: jail_duration,
     startTime: round.start_time!,
   });
 

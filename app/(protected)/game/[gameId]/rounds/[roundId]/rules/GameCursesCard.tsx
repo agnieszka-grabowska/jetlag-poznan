@@ -6,12 +6,11 @@ import React from "react";
 import { useGameContext } from "../components/GameProvider";
 
 export default function GameCursesCard() {
-  const { game } = useGameContext();
-  const curses = game.game_curses;
+  const { game_curses } = useGameContext();
 
   return (
     <ol style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px" }}>
-      {curses.map(({ difficulty, curseId, effect, name }) => (
+      {game_curses.map(({ difficulty, curseId, effect, name }) => (
         <CurseItem key={curseId} difficulty={difficulty} name={name} effect={effect} />
       ))}
     </ol>

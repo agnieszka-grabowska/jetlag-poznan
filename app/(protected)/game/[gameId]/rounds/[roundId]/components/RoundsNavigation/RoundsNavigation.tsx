@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useGameContext } from "../GameProvider";
 
 export default function RoundsNavigation() {
-  const { game } = useGameContext();
+  const { rounds } = useGameContext();
 
   const pathname = usePathname();
   const currectPageIsRules = pathname.endsWith("rules");
@@ -18,7 +18,7 @@ export default function RoundsNavigation() {
   return (
     <nav>
       <ol className={styles.nav}>
-        {game.rounds.map((round, index) => (
+        {rounds.map((round, index) => (
           <Round round={round} key={round.id} index={index} />
         ))}
       </ol>

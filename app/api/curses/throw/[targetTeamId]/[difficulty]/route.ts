@@ -4,9 +4,9 @@ import { validateSession } from "@/app/api/auth";
 import { Curse, TeamRoundCurse } from "@prisma/client";
 import { sendNotification } from "@/app/utils/actions";
 
-export type ThrowCurseResponse = {
-  curse: TeamRoundCurse & { curse: Curse };
-};
+export interface ThrowCurseResponse extends TeamRoundCurse {
+  curse: Curse;
+}
 
 type Params = Promise<{ difficulty: string; targetTeamId: string }>;
 
@@ -118,7 +118,7 @@ export async function POST(_request: Request, { params }: { params: Params }) {
   });
 
   return NextResponse.json<ThrowCurseResponse>({
-    curse,
+    ...curse,
   });
 }
 

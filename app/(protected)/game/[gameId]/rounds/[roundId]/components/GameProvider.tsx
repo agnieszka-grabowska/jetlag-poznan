@@ -1,14 +1,14 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import { GetGameResponse } from "@/app/api/games/[gameId]/route";
+import { GameResponse } from "@/app/api/games/[gameId]/route";
 import { useParams } from "next/navigation";
 import Spinner from "@/app/ui/components/spinner/spinner";
 import Center from "@/app/ui/components/Center/Center";
 import GridSkeleton from "./GridSkeleton";
 import { useGame } from "@/app/services/queries";
 
-const GameContext = React.createContext<GetGameResponse | null>(null);
+const GameContext = React.createContext<GameResponse | null>(null);
 
 export function useGameContext() {
   const context = React.useContext(GameContext);
@@ -51,5 +51,5 @@ export default function GameProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  return <GameContext.Provider value={{ game: data.game }}>{children}</GameContext.Provider>;
+  return <GameContext.Provider value={data}>{children}</GameContext.Provider>;
 }

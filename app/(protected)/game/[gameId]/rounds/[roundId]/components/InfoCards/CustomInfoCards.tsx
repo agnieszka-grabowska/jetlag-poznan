@@ -7,17 +7,17 @@ import { useGameContext } from "../GameProvider";
 import useUserTeam from "@/app/hooks/use_user_team";
 
 export function AnswerTimeLimitCard() {
-  const { game } = useGameContext();
+  const { answer_time_limit } = useGameContext();
 
-  return <InfoCard label="answer Time Limit">{formatTime(game.answer_time_limit)}</InfoCard>;
+  return <InfoCard label="answer Time Limit">{formatTime(answer_time_limit)}</InfoCard>;
 }
 
 export function JailPeriodCard() {
-  const { game } = useGameContext();
+  const { jail_duration } = useGameContext();
 
   return (
     <InfoCard label="jail period" color="#d33333">
-      {formatTime(game.jail_duration)}
+      {formatTime(jail_duration)}
     </InfoCard>
   );
 }
@@ -44,15 +44,15 @@ export function MapCard() {
 }
 
 export function DiceCostCard() {
-  const { game } = useGameContext();
+  const { dice_cost } = useGameContext();
 
-  if (!game.dice_cost) {
-    return null; // If dice cost is not set, do not render the card
+  if (!dice_cost) {
+    return; // If dice cost is not set, do not render the card
   }
 
   return (
     <InfoCard label="dice cost" color="#e6d30b">
-      {game.dice_cost.toString()}
+      {dice_cost.toString()}
     </InfoCard>
   );
 }
